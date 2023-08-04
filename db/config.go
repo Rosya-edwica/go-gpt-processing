@@ -1,0 +1,35 @@
+package db
+
+import (
+	"database/sql"
+	"fmt"
+
+	_ "github.com/go-sql-driver/mysql"
+)
+
+type Database struct {
+	Host       string
+	Port       string
+	User       string
+	Password   string
+	Name       string
+	Connection *sql.DB
+}
+
+func (d *Database) Connect() {
+	connectionUrl := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", d.User, d.Password, d.Host, d.Port, d.Name)
+	connection, err := sql.Open("mysql", connectionUrl)
+	checkErr(err)
+	d.Connection = connection
+}
+
+func checkErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+
+func (d *Database) Close() {
+	d.Connection.Close()
+}
