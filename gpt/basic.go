@@ -7,6 +7,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"time"
 
 	openai "github.com/sashabaranov/go-openai"
 )
@@ -14,8 +15,10 @@ import (
 
 func SendRequestToGPT(query string) (answer string, err error) {
 	client := openai.NewClient(os.Getenv("GPT_TOKEN"))
+	gptContext, cancel := context.WithTimeout(context.Background(), time.Second * 20)
+	defer cancel()
 	response, err := client.CreateChatCompletion(
-		context.Background(),
+		gptContext,
 		openai.ChatCompletionRequest{
 			Model: openai.GPT3Dot5Turbo,
 			Messages: []openai.ChatCompletionMessage{
@@ -27,7 +30,7 @@ func SendRequestToGPT(query string) (answer string, err error) {
 		},
 	)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	answer = response.Choices[0].Message.Content
 	return
@@ -43,12 +46,5 @@ func convertAnswerToBoolean(answer string) (bool, error) {
 	case "да": return true, nil
 	case "нет": return false, nil
 	default: return false, errors.New(fmt.Sprintf("Неправильный ответ: %s", answer))
-	}
-}
-
-func checkErr(err error) { 
-	if err != nil {
-		fmt.Println(err)
-		panic(err)
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gpt-skills/logger"
 	"gpt-skills/models"
+	"strings"
 )
 
 func CheckSkillIsSoftOrHard(softOrHard string, skill *models.Skill) (err error) {
@@ -17,7 +18,9 @@ func CheckSkillIsSoftOrHard(softOrHard string, skill *models.Skill) (err error) 
 	answer, err =  SendRequestToGPT(question)
 	if err != nil {
 		for {
-			fmt.Println(err)
+			if strings.Contains(err.Error(), "context deadline exceeded") {
+				return
+			}
 			answer, err = (SendRequestToGPT(question))
 			if err == nil {
 				break
