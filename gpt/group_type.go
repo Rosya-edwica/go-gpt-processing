@@ -16,9 +16,9 @@ func CheckSkillsForTypeGroup(skill *models.Skill) (err error) {
 		return
 	}
 	fmt.Println(answer)
-	if strings.Contains(answer, "профессия/специальность/должность") || strings.Contains(answer, "1") {
+	if strings.Contains(answer, "профессия/специальность/должность") || strings.Contains(answer, "2") {
 		skill.Group = "профессия"
-	} else if strings.Contains(answer, "навык") || strings.Contains(answer, "2") {
+	} else if strings.Contains(answer, "навык") || strings.Contains(answer, "1") {
 		skill.Group = "навык"
 	} else if strings.Contains(answer, "другое") || strings.Contains(answer, "3") {
 		skill.Group = "другое"
