@@ -3,7 +3,15 @@ package db
 import (
 	"fmt"
 	"gpt-skills/models"
+	"strings"
 )
+
+func (d *Database) ExecuteQuery(query string) {
+	tx, _ := d.Connection.Begin()
+	_, err := d.Connection.Exec(query)
+	checkErr(err)
+	tx.Commit()
+}
 
 func (d *Database) GetSkillsPair() (pair models.Pair) {
 	query := `
@@ -36,10 +44,7 @@ func (d *Database) UpdatePair(pair models.Pair) {
 		UPDATE demand_duplicate
 		SET is_duplicate_gpt = %t
 		WHERE id = %d`, pair.IsDuplicate, pair.Id)
-	tx, _ := d.Connection.Begin()
-	_, err := d.Connection.Exec(query)
-	checkErr(err)
-	tx.Commit()
+	d.ExecuteQuery(query)
 }
 
 func (d *Database) GetSkill(softOrHard string) (skill models.Skill) {
@@ -71,6 +76,7 @@ func (d *Database) GetSkill(softOrHard string) (skill models.Skill) {
 			Name: name,
 			IsValid: isValid,
 		}
+		fmt.Println("Skill", skill)
 	}
 	return
 }
@@ -88,9 +94,38 @@ func (d *Database) UpdateSkill(softOrHard string, skill models.Skill) {
 			SET is_hard_gpt = %t
 			WHERE id = %d`, skill.IsValid, skill.Id)
 	}
+	d.ExecuteQuery(query)
+	
+}
 
-	tx, _ := d.Connection.Begin()
-	_, err := d.Connection.Exec(query)
+func (d *Database) GetSkillWithoutGroup() (skill models.Skill) {
+	query := `
+		SELECT id, name, is_displayed
+		FROM demand
+		WHERE type_group IS NULL
+		LIMIT 1`
+	rows, err := d.Connection.Query(query)
 	checkErr(err)
-	tx.Commit()
+	for rows.Next() {
+		var name string
+		var id int
+		var isValid bool
+
+		err = rows.Scan(&id, &name, &isValid)
+		skill = models.Skill{
+			Id: id,
+			Name: name,
+			IsValid: isValid,
+		}
+	}
+	return
+}
+
+
+func (d *Database) UpdateSkillGroup(skill models.Skill) {
+	query := fmt.Sprintf(`
+		UPDATE demand
+		SET type_group='%s'
+		WHERE lower(name) = '%s' `, skill.Group, strings.ToLower(skill.Name))
+	d.ExecuteQuery(query)
 }

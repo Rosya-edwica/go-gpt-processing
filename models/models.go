@@ -11,4 +11,5 @@ type Skill struct {
 	Id int
 	Name string
 	IsValid bool
+	Group string
 }
