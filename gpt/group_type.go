@@ -23,7 +23,7 @@ func CheckSkillsForTypeGroup(skill *models.Skill) (err error) {
 	} else if strings.Contains(answer, "другое") || strings.Contains(answer, "3") {
 		skill.Group = "другое"
 	} else {
-		return errors.New(fmt.Sprintf("ОШИБКА: ответ - %s. вопрос: %s", answer, question))
+		return errors.New(fmt.Sprintf("Неправильный ответ: ответ - %s. вопрос: %s", answer, question))
 	}
 	
 	logger.Log.Printf("Ответ '%s' для вопроса: %s", answer, question)
