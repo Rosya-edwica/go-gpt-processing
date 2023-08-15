@@ -1,11 +1,12 @@
 package gpt
 
 import (
-	"fmt"
-	"strings"
 	"errors"
+	"fmt"
 	"gpt-skills/logger"
 	"gpt-skills/models"
+	"strings"
+	"time"
 )
 
 
@@ -13,7 +14,8 @@ func CheckSkillsForTypeGroup(skill *models.Skill) (err error) {
 	question := fmt.Sprintf(`Если слово «%s» является знанием, умением, квалификацией, навыком, способностью, профнавыком, практическим навыком, компетенцией, то поставь – 1, если это слово является профессией, должностью, работой, квалификацией, то поставь – 2, в ином случае поставь - 3`, skill.Name)
 	answer, err := SendRequestToGPT(question)
 	if err != nil {
-		fmt.Println("Ошибка", err)
+		fmt.Println("ОШИБКА:", err)
+		time.Sleep(5 * time.Second)
 		return
 	}
 	fmt.Println(answer)
