@@ -16,7 +16,7 @@ func CheckSkillsForTypeGroup(skill *models.Skill) (err error) {
 	if err != nil {
 		fmt.Println("ОШИБКА:", err)
 		time.Sleep(5 * time.Second)
-		return
+		return errors.New(fmt.Sprintf("ОШИБКА: %s", err.Error()))
 	}
 	fmt.Println(answer)
 	if strings.Contains(answer, "профессия/специальность/должность") || strings.Contains(answer, "2") {
