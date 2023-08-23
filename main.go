@@ -5,7 +5,6 @@ import (
 	"gpt-skills/db"
 	"gpt-skills/gpt"
 	"gpt-skills/logger"
-	// "gpt-skills/models"
 	"os"
 	"strings"
 	"time"
@@ -103,6 +102,7 @@ func CheckAllSkillsForGroupType(database *db.Database) {
 		if err == nil {
 			database.UpdateSkillGroup(skill)
 		}
+		time.Sleep(2 * time.Second)
 	}
 }
 
