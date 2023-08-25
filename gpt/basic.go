@@ -20,7 +20,7 @@ func SendRequestToGPT(query string) (answer string, err error) {
 	response, err := client.CreateChatCompletion(
 		gptContext,
 		openai.ChatCompletionRequest{
-			Model: openai.GPT3Dot5Turbo,
+			Model: openai.GPT4,
 			Messages: []openai.ChatCompletionMessage{
 				{
 					Role: openai.ChatMessageRoleUser,

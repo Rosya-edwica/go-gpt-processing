@@ -10,38 +10,40 @@ import (
 
 
 func CheckSkillsForTypeGroup(skill *models.Skill) (err error) {
-	question := fmt.Sprintf(` Определи, к какой категории относится слово «%s». 
-	Если это умение, навык, способность или компетенция, то отметь как 1. 
-	Если это профессия или должность, то отметь как 2. В противном случае отметь как 3.
+	question := fmt.Sprintf(` Identify which category the word "%s" belongs to. 
+	If it is a skill, ability or competence, mark it as 1. 
+	If it is a profession or position, mark as 2. Otherwise, mark as 3.
 
-	Вот пример:
-	К категории "умение, навык, способность или компетенция" относится следующее - Python, Golang, GIT, креативность, 
-	владение yii2, администрирование, юридическое заключение, знание конструкций автомобиля, эффективная организация рабочего времени,
-	Этапы лечебного и диагностического процессов,   программирование, оптимизация, организация команды, работа с документами, 
-	мотивация, испанский язык, Эпидуральная анестезия, знание основных категорий педагогики, Бороскопическое обследование, 
-	Разработка предложений по повышению надежности эксплуатируемого оборудования, Проверка соблюдения персоналом регламентов 
-	эксплуатации оборудования НППС, Прогнозирование оптимального дебита скважин, Правила безопасной организации труда 
-	при изготовлении столярных изделий, Определять неисправности в работе монорельсовых тележек, Наблюдение за показаниями
-	контрольно-измерительных приборов, Подбор сортов семян, Улучшению технического состояния мелиоративных систем, 
-	Возделывание почвы, Битрикс 24, 1С, Autocad, Scrum, MS Excel, MS Access, Access, Excel, 1С: Предприятие 8, 
-	Sublime text, ТК РФ, Трудовой кодекс РФ, Исполнительность, Хорошая обучаемость, Ремонт автомобиля, транспортная логистика, 
-	SAP, Телемаркетинг, анализ данных, SEO-продвижение,  Расчет пожарных рисков, Горное дело, Преподавание.
+	Here's an example:
+	The skill, ability or competency category includes the following - Python, Golang, GIT, creativity,	yii2 proficiency, 
+	administration, legal opinion, knowledge of vehicle design, effective time management,
+	Treatment and diagnostic process steps, programming, optimization, team organization, paperwork, 
+	motivation, Spanish, Epidural anesthesia, Knowledge of basic categories of pedagogy, Boroscopic examination, 
+	Development of proposals to improve the reliability of operating equipment, Verification of personnel compliance with regulations 
+	operation of the equipment, Forecasting of optimal well flow rate, Rules of safe organization of labor 
+	When manufacturing carpentry products, Determine malfunctions in the operation of monorail carts, Observing the readings of the
+	Control and measuring instruments, Selection of seed varieties, Improvement of technical condition of land reclamation systems, 
+	Soil cultivation, Bitrix 24, 1C, Autocad, Scrum, MS Excel, MS Access, Access, Excel, 1C: Enterprise 8, 
+	Sublime text, Labor Code of the Russian Federation, Diligence, Good learning ability, Car repair, Transportation logistics, 
+	SAP, Telemarketing, Data Analysis, SEO-Promotion, Fire Risk Calculation, Mining, Teaching.
 
-	К категории "профессия или должность" относится -  Матрос, бухгалтер, программист, проектировщик, python разработчик, 
-	консультант, Преподаватель изобразительного исскуства, Инженер по механизации и автоматизации производственных процессов, 
-	Менеджер по закупкам запчастей, Ведущий менеджер по въездному туризму, Пятновыводчик, Работник по приему и размещению гостей, 
-	Слесарь по ремонту автомобилей 2 разряд, Лаборант по физико-механическим испытаниям 5-го разряда, 
-	Инженер по гарантии (региональный руководитель), Газовщик шахтной печи 5-ого разряда, Стоматолог, Врач, Учитель, Химик, 
-	Грузчик, Сварщик, Повар, 1С-программист, HR-manager, Рекрутер, Специалист по подбору персонала, Логист, СЕО, Директор, 
-	Управляющий, Аудитор, Инспектор, Страховщик, Финансист, Экономист, Добытчик, Юрист-консультант, Юрист, Таксист, Полицейский, 
-	SAP-специалист, Преподаватель.
 
-	К категории "Другое" относится - карта водителя, среднее образование, категория С, категория В, Вахтовый метод, нет опыта,
-	опыт в благоустройстве, съемочный процесс, штатное расписание, работа в штате, работа на износ, штора, цистерна, 
-	работа без опыта, Закон, Реклама, Импорт, IT сфера, военный билет, региональный найм, гарантия, обслуживание, лист бумаги А4,
-	желание зарабатывать, спецтехника, тягач, машина, груз, трактор, опрятный внешний вид, ГО ЧС, МВД, 
-	Желание работать в строевом подразделении, спортивное питание, опыт активных продаж, 
-	2-й Специальный полк полиции ГУ МВД России по г. Москве, скорость работы, Госты, Преподавательский состав.
+	The category "profession or position" includes - Sailor, accountant, programmer, designer, python developer, 
+	consultant, Visual Arts teacher, Engineer for mechanization and automation of production processes, 
+	Spare Parts Purchasing Manager, Leading Manager of Inbound Tourism, Stain Remover, Receptionist, Accommodation Worker, 
+	Automobile repair mechanic 2nd grade, Physical-mechanical testing laboratory technician 5th grade, 
+	Warranty Engineer (Regional Supervisor), 5th Grade Mine Furnace Gas Engineer, Dentist, Doctor, Teacher, Chemist, 
+	Loader, Welder, Cook, 1C-programmer, HR-manager, Recruiter, Recruitment specialist, Logistician, CEO, Director, 
+	Manager, Auditor, Inspector, Insurer, Financier, Economist, Producer, Legal Consultant, Lawyer, Taxi Driver, Policeman, 
+	SAP specialist, Teacher.
+
+
+	The category "Other" includes - driver card, secondary education, category C, category B, Shift work, no experience,
+	experience in landscaping, filming, staffing, working on staff, working on wear and tear, curtain, tanker, 
+	work without experience, Law, Advertising, Import, IT field, military ID, regional hiring, warranty, maintenance, A4 sheet of paper,
+	desire to earn, special equipment, tractor, car, cargo, tractor, neat appearance, Civil Defense, Ministry of Internal Affairs, 
+	Desire to work in a combat unit, sports nutrition, experience in active sales, 
+	2nd Special Police Regiment of the Main Department of the Ministry of Internal Affairs of Russia in Moscow, speed of work, Gosts, Teaching staff.
 	`, skill.Name)
 	answer, err := SendRequestToGPT(strings.TrimSpace(question))
 	fmt.Println(answer)

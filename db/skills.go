@@ -100,9 +100,9 @@ func (d *Database) UpdateSkill(softOrHard string, skill models.Skill) {
 
 func (d *Database) GetSkillWithoutGroup() (skill models.Skill) {
 	query := `
-		SELECT id, name, is_displayed
+		SELECT id, translated, is_displayed
 		FROM demand
-		WHERE type_group IS NULL
+		WHERE translated IS NOT NULL AND type_group IS NULL
 		LIMIT 1`
 	rows, err := d.Connection.Query(query)
 	checkErr(err)
@@ -126,6 +126,6 @@ func (d *Database) UpdateSkillGroup(skill models.Skill) {
 	query := fmt.Sprintf(`
 		UPDATE demand
 		SET type_group='%s'
-		WHERE lower(name) = '%s' `, skill.Group, strings.ToLower(skill.Name))
+		WHERE lower(translated) = '%s' `, skill.Group, strings.ToLower(skill.Name))
 	d.ExecuteQuery(query)
 }
