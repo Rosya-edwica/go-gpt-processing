@@ -102,7 +102,7 @@ func CheckAllSkillsForGroupType(database *db.Database) {
 		if err == nil {
 			database.UpdateSkillGroup(skill)
 		}
-		time.Sleep(2 * time.Second)
+		time.Sleep(5 * time.Second)
 	}
 }
 
