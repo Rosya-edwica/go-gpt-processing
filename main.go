@@ -5,6 +5,7 @@ import (
 	"gpt-skills/db"
 	"gpt-skills/gpt"
 	"gpt-skills/logger"
+	"gpt-skills/telegram"
 	"os"
 	"strings"
 	"time"
@@ -119,6 +120,7 @@ func checkErr(err error) {
 			logger.Log.Printf("ОШИБКА: %s", err)
 			time.Sleep(time.Second * 10)
 		} else {
+			telegram.Mailing(err.Error())
 			panic(err)
 		}
 	}
