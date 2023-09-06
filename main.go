@@ -9,7 +9,6 @@ import (
 	"os"
 	"strings"
 	"time"
-
 	"github.com/joho/godotenv"
 )
 var duplicateFunction, softOrHardFunction, groupTypeFunction bool
@@ -49,7 +48,6 @@ func main() {
 		Password: os.Getenv("MYSQL_PASSWORD"),
 	}
 	database.Connect()
-
 	if duplicateFunction {
 		CheckAllSkillsForDuplicates(&database)
 	} else if softOrHardFunction {

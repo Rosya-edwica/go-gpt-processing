@@ -37,14 +37,14 @@ func SendRequestToGPT(query string) (answer string, err error) {
 }
 
 func convertAnswerToBoolean(answer string) (bool, error) {
-	re := regexp.MustCompile(`да,|нет,|нет|не|да`)
+	re := regexp.MustCompile(`yes,|no,|no|yes`)
 	answer = strings.ReplaceAll(strings.ToLower(answer), ".", "")
 	answer = re.FindString(answer)
 	answer = strings.ReplaceAll(answer, ",", "")
 
 	switch answer{
-	case "да": return true, nil
-	case "нет": return false, nil
+	case "yes": return true, nil
+	case "no": return false, nil
 	default: return false, errors.New(fmt.Sprintf("Неправильный ответ: %s", answer))
 	}
 }
