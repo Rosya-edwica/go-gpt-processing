@@ -54,14 +54,14 @@ func (d *Database) GetSkill(softOrHard string) (skill models.Skill) {
 		SELECT id, translated, is_displayed
 		FROM demand
 		WHERE is_soft_gpt IS NULL AND is_hard_gpt IS NOT TRUE AND is_custom IS NOT TRUE AND type_group = 'навык' AND is_deleted IS FALSE
-		AND id < 666
+		AND id < 2050
 		LIMIT 1`
 	} else {
 		query = `
 		SELECT id, translated, is_displayed
 		FROM demand
 		WHERE is_soft_gpt IS NOT TRUE AND is_hard_gpt IS NULL AND is_custom IS NOT TRUE AND type_group = 'навык' AND is_deleted IS FALSE
-		AND id < 666
+		AND id < 2204
 		LIMIT 1`
 	}
 	
