@@ -19,7 +19,7 @@ func (d *Database) GetSkillsPair() (pair models.Pair) {
 		FROM demand_duplicate
 		WHERE is_duplicate_gpt IS NULL
 		LIMIT 1`
-	
+
 	rows, err := d.Connection.Query(query)
 	checkErr(err)
 	for rows.Next() {
@@ -29,15 +29,14 @@ func (d *Database) GetSkillsPair() (pair models.Pair) {
 
 		err = rows.Scan(&id, &first, &second, &isDuplicate)
 		pair = models.Pair{
-			First: first,
-			Second: second,
-			Id: id,
+			First:       first,
+			Second:      second,
+			Id:          id,
 			IsDuplicate: isDuplicate,
 		}
 	}
 	return
 }
-
 
 func (d *Database) UpdatePair(pair models.Pair) {
 	query := fmt.Sprintf(`
@@ -62,7 +61,7 @@ func (d *Database) GetSkill(softOrHard string) (skill models.Skill) {
 		WHERE is_soft_gpt IS NOT TRUE AND is_hard_gpt IS NULL AND is_custom IS NOT TRUE AND type_group = 'навык' AND is_deleted IS FALSE
 		LIMIT 1`
 	}
-	
+
 	rows, err := d.Connection.Query(query)
 	checkErr(err)
 	for rows.Next() {
@@ -72,8 +71,8 @@ func (d *Database) GetSkill(softOrHard string) (skill models.Skill) {
 
 		err = rows.Scan(&id, &name, &isValid)
 		skill = models.Skill{
-			Id: id,
-			Name: name,
+			Id:      id,
+			Name:    name,
 			IsValid: isValid,
 		}
 		fmt.Println("Skill", skill)
@@ -82,7 +81,7 @@ func (d *Database) GetSkill(softOrHard string) (skill models.Skill) {
 }
 
 func (d *Database) UpdateSkill(softOrHard string, skill models.Skill) {
-	var query string 
+	var query string
 	if softOrHard == "soft" {
 		query = fmt.Sprintf(`
 			UPDATE demand
@@ -95,7 +94,7 @@ func (d *Database) UpdateSkill(softOrHard string, skill models.Skill) {
 			WHERE id = %d`, skill.IsValid, skill.Id)
 	}
 	d.ExecuteQuery(query)
-	
+
 }
 
 func (d *Database) GetSkillWithoutGroup() (skill models.Skill) {
@@ -113,19 +112,45 @@ func (d *Database) GetSkillWithoutGroup() (skill models.Skill) {
 
 		err = rows.Scan(&id, &name, &isValid)
 		skill = models.Skill{
-			Id: id,
-			Name: name,
+			Id:      id,
+			Name:    name,
 			IsValid: isValid,
 		}
 	}
 	return
 }
 
-
 func (d *Database) UpdateSkillGroup(skill models.Skill) {
 	query := fmt.Sprintf(`
 		UPDATE demand
 		SET type_group='%s'
 		WHERE lower(translated) = '%s' `, skill.Group, strings.ToLower(skill.Name))
+	d.ExecuteQuery(query)
+}
+
+func (d *Database) GetSkills() (skills []models.SkillForSubSkills) {
+	query := `
+		SELECT id, name
+		FROM demand
+		WHERE type_group = 'навык' and is_hard_gpt is true AND is_deleted is false`
+	rows, err := d.Connection.Query(query)
+	checkErr(err)
+	for rows.Next() {
+		var name string
+		var id int
+
+		err = rows.Scan(&id, &name)
+		skills = append(skills, models.SkillForSubSkills{
+			Id:   id,
+			Name: name,
+		})
+	}
+	return
+}
+
+func (d *Database) SaveSubskills(skill models.SkillForSubSkills) {
+	query := fmt.Sprintf(`
+		INSERT IGNORE INTO subskills(skill_id, subskills)
+		VALUES(%d, '%s')`, skill.Id, strings.Join(skill.SubSkills, "|"))
 	d.ExecuteQuery(query)
 }
