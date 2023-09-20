@@ -2,14 +2,16 @@ package main
 
 import (
 	"fmt"
-	"github.com/joho/godotenv"
 	"gpt-skills/db"
-	"gpt-skills/gpt"
+	"gpt-skills/gpt/positionsGPT"
+	"gpt-skills/gpt/skillsGPT"
 	"gpt-skills/logger"
 	"gpt-skills/telegram"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/joho/godotenv"
 )
 
 var duplicateFunction, softOrHardFunction, groupTypeFunction bool
@@ -44,6 +46,14 @@ func main() {
 		CheckAllSkillsForGroupType(&database)
 	case "subskills":
 		CollectForAllSkillsSubSkills(&database)
+	case "description":
+		FindDescriptionForAllsPositions(&database)
+	case "about":
+		FindAboutForAllsPositions(&database)
+	case "other_names":
+		FindOtherNamesForAllsPositions(&database)
+	case "work_places":
+		FindWorkPlacesForAllPositions(&database)
 	default:
 		panic(exitMessage)
 	}
@@ -57,7 +67,7 @@ func CheckAllSkillsForDuplicates(database *db.Database) {
 		if pair.Id == 0 {
 			return
 		}
-		err := gpt.CheckSkillsForDuplicates(&pair)
+		err := skillsGPT.CheckSkillsForDuplicates(&pair)
 		checkErr(err)
 		if err == nil {
 			database.UpdatePair(pair)
@@ -72,7 +82,7 @@ func CheckAllSkillsForSoftOrHardSkill(database *db.Database, softOrHard string) 
 		if skill.Id == 0 {
 			return
 		}
-		err := gpt.CheckSkillIsSoftOrHard(softOrHard, &skill)
+		err := skillsGPT.CheckSkillIsSoftOrHard(softOrHard, &skill)
 		checkErr(err)
 		if err == nil {
 			database.UpdateSkill(softOrHard, skill)
@@ -87,7 +97,7 @@ func CheckAllSkillsForGroupType(database *db.Database) {
 		if skill.Id == 0 {
 			return
 		}
-		err := gpt.CheckSkillsForTypeGroup(&skill)
+		err := skillsGPT.CheckSkillsForTypeGroup(&skill)
 		checkErr(err)
 		if err == nil {
 			database.UpdateSkillGroup(skill)
@@ -100,13 +110,69 @@ func CollectForAllSkillsSubSkills(database *db.Database) {
 	fmt.Println("Ищем поднавыки")
 	skills := database.GetSkills()
 	for i, skill := range skills {
-		subskills, err := gpt.GetSubSkills(skill.Name)
+		subskills, err := skillsGPT.GetSubSkills(skill.Name)
 		checkErr(err)
 		if len(subskills) != 0 {
 			skill.SubSkills = subskills
 			database.SaveSubskills(skill)
 		}
 		fmt.Printf("[%d/%d] Поднавыки для навыка - %s:\n %s\n\n", i+1, len(skills), skill.Name, strings.Join(skill.SubSkills, "|"))
+
+	}
+}
+
+func FindAboutForAllsPositions(database *db.Database) {
+	fmt.Println("Ищем описание для профессии")
+	positions := database.GetPositionWithoutAbout()
+	for i, pos := range positions {
+		about, err := positionsGPT.GetAboutForPosition(pos.Name)
+		checkErr(err)
+		pos.About = about
+		database.UpdatePositionAbout(pos)
+		fmt.Printf("[%d/%d] Описание для профессии - %s (%d):\n %s\n\n", i+1, len(positions), pos.Name, pos.Id, pos.About)
+		time.Sleep(time.Second * 10)
+
+	}
+}
+
+func FindDescriptionForAllsPositions(database *db.Database) {
+	fmt.Println("Ищем полное описание для профессии")
+	positions := database.GetPositionWithoutDescription()
+	for i, pos := range positions {
+		descr, err := positionsGPT.GetDescriptionForPosition(pos.Name)
+		checkErr(err)
+		pos.Description = descr
+		// database.UpdatePositionDescription(pos)
+		fmt.Printf("[%d/%d] Описание для профессии - %s (%d):\n %s\n\n", i+1, len(positions), pos.Name, pos.Id, pos.Description)
+		time.Sleep(time.Second * 10)
+
+	}
+}
+
+func FindOtherNamesForAllsPositions(database *db.Database) {
+	fmt.Println("Ищем полное описание для профессии")
+	positions := database.GetPositionWithoutOtherNames()
+	for i, pos := range positions {
+		otherNames, err := positionsGPT.GetOtherNamesForPosition(pos.Name)
+		checkErr(err)
+		pos.OtherNames = otherNames
+		database.UpdatePositionOtherNames(pos)
+		fmt.Printf("[%d/%d] Другие написания для профессии - %s (%d):\n %s\n\n", i+1, len(positions), pos.Name, pos.Id, pos.OtherNames)
+		time.Sleep(time.Second * 10)
+
+	}
+}
+
+func FindWorkPlacesForAllPositions(database *db.Database) {
+	fmt.Println("Ищем места работ для профессии")
+	positions := database.GetPositionWithoutWorkPlaces()
+	for i, pos := range positions {
+		workPlaces, err := positionsGPT.GetWorkPlacesForPosition(pos.Name)
+		checkErr(err)
+		pos.WorkPlaces = workPlaces
+		database.UpdatePositionWorkPlaces(pos)
+		fmt.Printf("[%d/%d] Места работы для профессии - %s (%d):\n %s\n\n", i+1, len(positions), pos.Name, pos.Id, pos.WorkPlaces)
+		time.Sleep(time.Second * 10)
 
 	}
 }

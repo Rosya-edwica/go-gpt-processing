@@ -1,8 +1,9 @@
-package gpt
+package skillsGPT
 
 import (
 	"errors"
 	"fmt"
+	"gpt-skills/gpt"
 	"regexp"
 )
 
@@ -11,7 +12,7 @@ func GetSubSkills(query string) (skills []string, err error) {
 	какими hard-skills нужно обладать, чтобы изучить "%s" - сократи ответ до перечня навыков
 	`, query)
 
-	answer, err := SendRequestToGPT(question)
+	answer, err := gpt.SendRequestToGPT(question)
 	if err != nil {
 		return []string{}, errors.New(fmt.Sprintf("ОШИБКА: %s", err.Error()))
 	}

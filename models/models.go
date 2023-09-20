@@ -19,3 +19,13 @@ type SkillForSubSkills struct {
 	Name      string
 	SubSkills []string
 }
+
+type Position struct {
+	Id          int
+	Name        string
+	About       string
+	Description string
+	WorkPlaces  []string
+	Skills      []string
+	OtherNames  []string
+}

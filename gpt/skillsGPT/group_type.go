@@ -1,13 +1,13 @@
-package gpt
+package skillsGPT
 
 import (
 	"errors"
 	"fmt"
+	"gpt-skills/gpt"
 	"gpt-skills/logger"
 	"gpt-skills/models"
 	"strings"
 )
-
 
 func CheckSkillsForTypeGroup(skill *models.Skill) (err error) {
 	question := fmt.Sprintf(` Identify which category the word "%s" belongs to. 
@@ -45,7 +45,7 @@ func CheckSkillsForTypeGroup(skill *models.Skill) (err error) {
 	Desire to work in a combat unit, sports nutrition, experience in active sales, 
 	2nd Special Police Regiment of the Main Department of the Ministry of Internal Affairs of Russia in Moscow, speed of work, Gosts, Teaching staff.
 	`, skill.Name)
-	answer, err := SendRequestToGPT(strings.TrimSpace(question))
+	answer, err := gpt.SendRequestToGPT(strings.TrimSpace(question))
 	fmt.Println(answer)
 	if err != nil {
 		return errors.New(fmt.Sprintf("ОШИБКА: %s", err.Error()))
@@ -59,7 +59,7 @@ func CheckSkillsForTypeGroup(skill *models.Skill) (err error) {
 	} else {
 		return errors.New(fmt.Sprintf("Неправильный ответ: ответ - %s. вопрос: %s", answer, question))
 	}
-	
+
 	logger.Log.Printf("Ответ '%s' для вопроса: %s", answer, question)
 
 	return

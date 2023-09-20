@@ -12,10 +12,9 @@ import (
 	openai "github.com/sashabaranov/go-openai"
 )
 
-
 func SendRequestToGPT(query string) (answer string, err error) {
 	client := openai.NewClient(os.Getenv("GPT_TOKEN"))
-	gptContext, cancel := context.WithTimeout(context.Background(), time.Second * 20)
+	gptContext, cancel := context.WithTimeout(context.Background(), time.Second*60)
 	defer cancel()
 	response, err := client.CreateChatCompletion(
 		gptContext,
@@ -23,7 +22,7 @@ func SendRequestToGPT(query string) (answer string, err error) {
 			Model: openai.GPT4,
 			Messages: []openai.ChatCompletionMessage{
 				{
-					Role: openai.ChatMessageRoleUser,
+					Role:    openai.ChatMessageRoleUser,
 					Content: query,
 				},
 			},
@@ -36,15 +35,18 @@ func SendRequestToGPT(query string) (answer string, err error) {
 	return
 }
 
-func convertAnswerToBoolean(answer string) (bool, error) {
+func ConvertAnswerToBoolean(answer string) (bool, error) {
 	re := regexp.MustCompile(`yes,|no,|no|yes`)
 	answer = strings.ReplaceAll(strings.ToLower(answer), ".", "")
 	answer = re.FindString(answer)
 	answer = strings.ReplaceAll(answer, ",", "")
 
-	switch answer{
-	case "yes": return true, nil
-	case "no": return false, nil
-	default: return false, errors.New(fmt.Sprintf("Неправильный ответ: %s", answer))
+	switch answer {
+	case "yes":
+		return true, nil
+	case "no":
+		return false, nil
+	default:
+		return false, errors.New(fmt.Sprintf("Неправильный ответ: %s", answer))
 	}
 }
