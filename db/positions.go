@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"gpt-skills/logger"
 	"gpt-skills/models"
 	"strings"
 )
@@ -27,7 +28,7 @@ func (d *Database) GetPositionWithoutDescription() (positions []models.Position)
 }
 
 func (d *Database) GetPositionWithoutAbout() (positions []models.Position) {
-	query := `SELECT id, name FROM test_gpt_position WHERE about = ''`
+	query := `SELECT id, name FROM test_gpt_position WHERE about IS NULL LIMIT 50`
 	rows, err := d.Connection.Query(query)
 	checkErr(err)
 	defer rows.Close()
@@ -47,7 +48,7 @@ func (d *Database) GetPositionWithoutAbout() (positions []models.Position) {
 }
 
 func (d *Database) GetPositionWithoutWorkPlaces() (positions []models.Position) {
-	query := `SELECT id, name FROM test_gpt_position WHERE work_places = ''`
+	query := `SELECT id, name FROM test_gpt_position WHERE work_places IS NULL`
 	rows, err := d.Connection.Query(query)
 	checkErr(err)
 	defer rows.Close()
@@ -67,7 +68,7 @@ func (d *Database) GetPositionWithoutWorkPlaces() (positions []models.Position) 
 }
 
 func (d *Database) GetPositionWithoutSkills() (positions []models.Position) {
-	query := `SELECT id, name FROM test_gpt_position WHERE skills = ''`
+	query := `SELECT id, name FROM test_gpt_position WHERE skills IS NULL`
 	rows, err := d.Connection.Query(query)
 	checkErr(err)
 	defer rows.Close()
@@ -113,26 +114,32 @@ func (d *Database) GetPositionWithoutOtherNames() (positions []models.Position) 
 func (d *Database) UpdatePositionDescription(pos models.Position) {
 	query := fmt.Sprintf(`UPDATE test_gpt_position SET description = '%s' WHERE id=%d`, pos.Description, pos.Id)
 	d.ExecuteQuery(query)
+	logger.Log.Printf("Полное описание для профессии - %s:%s", pos.Name, pos.Description)
 }
 
 func (d *Database) UpdatePositionAbout(pos models.Position) {
 	query := fmt.Sprintf(`UPDATE test_gpt_position SET about = '%s' WHERE id=%d`, pos.About, pos.Id)
 	d.ExecuteQuery(query)
+	logger.Log.Printf("Короткое описание для профессии - %s:%s", pos.Name, pos.About)
 }
 
 func (d *Database) UpdatePositionWorkPlaces(pos models.Position) {
 	query := fmt.Sprintf(`UPDATE test_gpt_position SET work_places = '%s' WHERE id=%d`, convertArrayToSQLString(pos.WorkPlaces), pos.Id)
 	d.ExecuteQuery(query)
+	logger.Log.Printf("Места работы для профессии - %s:%s", pos.Name, convertArrayToSQLString(pos.WorkPlaces))
 }
 
 func (d *Database) UpdatePositionSkills(pos models.Position) {
 	query := fmt.Sprintf(`UPDATE test_gpt_position SET skills = '%s' WHERE id=%d`, convertArrayToSQLString(pos.Skills), pos.Id)
 	d.ExecuteQuery(query)
+	logger.Log.Printf("Навыки для профессии - %s:%s", pos.Name, convertArrayToSQLString(pos.Skills))
+
 }
 
 func (d *Database) UpdatePositionOtherNames(pos models.Position) {
 	query := fmt.Sprintf(`UPDATE test_gpt_position SET other_names = '%s' WHERE id=%d`, convertArrayToSQLString(pos.OtherNames), pos.Id)
 	d.ExecuteQuery(query)
+	logger.Log.Printf("Вариации написания для профессии - %s:%s", pos.Name, convertArrayToSQLString(pos.OtherNames))
 }
 
 func convertArrayToSQLString(items []string) (result string) {

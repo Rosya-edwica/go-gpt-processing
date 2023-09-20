@@ -14,10 +14,11 @@ var (
 func init() {
 	logpath := "info.log"
 	flag.Parse()
-	file, err := os.Create(logpath)
+	file, err := os.OpenFile(logpath, os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
+	defer file.Close()
 	if err != nil {
 		panic(err)
 	}
-	Log = log.New(file, "", log.LstdFlags|log.Lshortfile)
+	Log = log.New(file,  "", log.LstdFlags)
 	fmt.Println("Logfile: " + logpath)
 }
