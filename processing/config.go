@@ -25,6 +25,6 @@ func checkErr(err error) {
 	}
 }
 
-func Pause() {
-	time.Sleep(time.Second * 5)
+func Pause(seconds int) {
+	time.Sleep(time.Second * time.Duration(seconds))
 }

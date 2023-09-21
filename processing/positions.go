@@ -11,11 +11,17 @@ func FindAboutForAllsPositions(database *db.Database) {
 	positions := database.GetPositionWithoutAbout()
 	for i, pos := range positions {
 		about, err := positionsGPT.GetAboutForPosition(pos.Name)
-		checkErr(err)
+		if err != nil {
+			Pause(120)
+			about, err = positionsGPT.GetAboutForPosition(pos.Name)
+			if err != nil {
+				continue
+			}
+		}
 		pos.About = about
 		database.UpdatePositionAbout(pos)
 		fmt.Printf("[%d/%d] Описание для профессии - %s (%d):\n %s\n\n", i+1, len(positions), pos.Name, pos.Id, pos.About)
-		Pause()
+		Pause(5)
 	}
 }
 
@@ -24,11 +30,17 @@ func FindDescriptionForAllsPositions(database *db.Database) {
 	positions := database.GetPositionWithoutDescription()
 	for i, pos := range positions {
 		descr, err := positionsGPT.GetDescriptionForPosition(pos.Name)
-		checkErr(err)
+		if err != nil {
+			Pause(120)
+			descr, err = positionsGPT.GetDescriptionForPosition(pos.Name)
+			if err != nil {
+				continue
+			}
+		}
 		pos.Description = descr
 		database.UpdatePositionDescription(pos)
 		fmt.Printf("[%d/%d] Описание для профессии - %s (%d):\n %s\n\n", i+1, len(positions), pos.Name, pos.Id, pos.Description)
-		Pause()
+		Pause(5)
 	}
 }
 
@@ -37,11 +49,17 @@ func FindOtherNamesForAllsPositions(database *db.Database) {
 	positions := database.GetPositionWithoutOtherNames()
 	for i, pos := range positions {
 		otherNames, err := positionsGPT.GetOtherNamesForPosition(pos.Name)
-		checkErr(err)
+		if err != nil {
+			Pause(120)
+			otherNames, err = positionsGPT.GetOtherNamesForPosition(pos.Name)
+			if err != nil {
+				continue
+			}
+		}
 		pos.OtherNames = otherNames
 		database.UpdatePositionOtherNames(pos)
 		fmt.Printf("[%d/%d] Другие написания для профессии - %s (%d):\n %s\n\n", i+1, len(positions), pos.Name, pos.Id, pos.OtherNames)
-		Pause()
+		Pause(5)
 
 	}
 }
@@ -51,11 +69,17 @@ func FindWorkPlacesForAllPositions(database *db.Database) {
 	positions := database.GetPositionWithoutWorkPlaces()
 	for i, pos := range positions {
 		workPlaces, err := positionsGPT.GetWorkPlacesForPosition(pos.Name)
-		checkErr(err)
+		if err != nil {
+			Pause(120)
+			workPlaces, err = positionsGPT.GetWorkPlacesForPosition(pos.Name)
+			if err != nil {
+				continue
+			}
+		}
 		pos.WorkPlaces = workPlaces
 		database.UpdatePositionWorkPlaces(pos)
 		fmt.Printf("[%d/%d] Места работы для профессии - %s (%d):\n %s\n\n", i+1, len(positions), pos.Name, pos.Id, pos.WorkPlaces)
-		Pause()
+		Pause(5)
 
 	}
 }

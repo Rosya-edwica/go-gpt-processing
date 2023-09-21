@@ -34,7 +34,7 @@ func CheckAllSkillsForSoftOrHardSkill(database *db.Database, softOrHard string) 
 		if err == nil {
 			database.UpdateSkill(softOrHard, skill)
 		}
-		Pause()
+		Pause(5)
 	}
 }
 
@@ -50,7 +50,7 @@ func CheckAllSkillsForGroupType(database *db.Database) {
 		if err == nil {
 			database.UpdateSkillGroup(skill)
 		}
-		Pause()
+		Pause(5)
 	}
 }
 
@@ -65,7 +65,7 @@ func CollectForAllSkillsSubSkills(database *db.Database) {
 			database.SaveSubskills(skill)
 		}
 		fmt.Printf("[%d/%d] Поднавыки для навыка - %s:\n %s\n\n", i+1, len(skills), skill.Name, strings.Join(skill.SubSkills, "|"))
-		Pause()
+		Pause(5)
 	}
 
 }
