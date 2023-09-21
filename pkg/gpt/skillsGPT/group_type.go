@@ -3,9 +3,9 @@ package skillsGPT
 import (
 	"errors"
 	"fmt"
-	"gpt-skills/gpt"
-	"gpt-skills/logger"
-	"gpt-skills/models"
+	"go-gpt-processing/pkg/gpt"
+	"go-gpt-processing/pkg/logger"
+	"go-gpt-processing/pkg/models"
 	"strings"
 )
 
@@ -51,11 +51,11 @@ func CheckSkillsForTypeGroup(skill *models.Skill) (err error) {
 		return errors.New(fmt.Sprintf("ОШИБКА: %s", err.Error()))
 	}
 	if strings.Contains(answer, "профессия/специальность/должность") || strings.Contains(answer, "2") {
-		skill.Group = "профессия"
+		skill.GroupType = "профессия"
 	} else if strings.Contains(answer, "навык") || strings.Contains(answer, "1") {
-		skill.Group = "навык"
+		skill.GroupType = "навык"
 	} else if strings.Contains(answer, "другое") || strings.Contains(answer, "3") {
-		skill.Group = "другое"
+		skill.GroupType = "другое"
 	} else {
 		return errors.New(fmt.Sprintf("Неправильный ответ: ответ - %s. вопрос: %s", answer, question))
 	}

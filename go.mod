@@ -1,11 +1,11 @@
-module gpt-skills
+module go-gpt-processing
 
-go 1.20
+go 1.21.1
 
 require (
 	github.com/go-sql-driver/mysql v1.7.1
 	github.com/joho/godotenv v1.5.1
-	github.com/sashabaranov/go-openai v1.14.1
+	github.com/sashabaranov/go-openai v1.15.3
 	github.com/tidwall/gjson v1.16.0
 )
 

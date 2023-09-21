@@ -2,9 +2,9 @@ package skillsGPT
 
 import (
 	"fmt"
-	"gpt-skills/gpt"
-	"gpt-skills/logger"
-	"gpt-skills/models"
+	"go-gpt-processing/pkg/gpt"
+	"go-gpt-processing/pkg/logger"
+	"go-gpt-processing/pkg/models"
 	"strings"
 )
 

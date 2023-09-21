@@ -3,7 +3,7 @@ package skillsGPT
 import (
 	"errors"
 	"fmt"
-	"gpt-skills/gpt"
+	"go-gpt-processing/pkg/gpt"
 	"regexp"
 )
 

@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"gpt-skills/logger"
+	"go-gpt-processing/pkg/logger"
 )
 
 const token = "6105028983:AAG5qYpp0KKkhBiyOHri6MmB5e_UVzfC9pU"

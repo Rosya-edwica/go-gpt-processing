@@ -2,14 +2,14 @@ package skillsGPT
 
 import (
 	"fmt"
-	"gpt-skills/gpt"
-	"gpt-skills/logger"
-	"gpt-skills/models"
+	"go-gpt-processing/pkg/gpt"
+	"go-gpt-processing/pkg/logger"
+	"go-gpt-processing/pkg/models"
 )
 
-func CheckSkillsForDuplicates(skillsPair *models.Pair) (err error) {
+func CheckSkillsForDuplicates(skillsPair *models.Skill) (err error) {
 	var answer string
-	question := fmt.Sprintf("Можно ли считать эти навыки дубликатами: '%s' и '%s'? Ответь Да или Нет.", skillsPair.First, skillsPair.Second)
+	question := fmt.Sprintf("Можно ли считать эти навыки дубликатами: '%s' и '%s'? Ответь Да или Нет.", skillsPair.Name, skillsPair.DuplicateName)
 	answer, err = gpt.SendRequestToGPT(question)
 	if err != nil {
 		for {

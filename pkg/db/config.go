@@ -29,6 +29,12 @@ func checkErr(err error) {
 	}
 }
 
+func (d *Database) ExecuteQuery(query string) {
+	tx, _ := d.Connection.Begin()
+	_, err := d.Connection.Exec(query)
+	checkErr(err)
+	tx.Commit()
+}
 
 func (d *Database) Close() {
 	d.Connection.Close()

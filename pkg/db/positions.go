@@ -2,89 +2,29 @@ package db
 
 import (
 	"fmt"
-	"gpt-skills/logger"
-	"gpt-skills/models"
+	"go-gpt-processing/pkg/logger"
+	"go-gpt-processing/pkg/models"
 	"strings"
 )
 
 func (d *Database) GetPositionWithoutDescription() (positions []models.Position) {
-	query := `SELECT id, name FROM test_gpt_position WHERE description IS NULL`
-	rows, err := d.Connection.Query(query)
-	checkErr(err)
-	defer rows.Close()
-
-	for rows.Next() {
-		var id int
-		var name string
-
-		err = rows.Scan(&id, &name)
-		positions = append(positions, models.Position{
-			Id:   id,
-			Name: name,
-		})
-
-	}
-	return
+	query := "SELECT id, name FROM test_gpt_position WHERE description IS NULL"
+	return d.GetPositionsByQuery(query)
 }
 
 func (d *Database) GetPositionWithoutAbout() (positions []models.Position) {
-	query := `SELECT id, name FROM test_gpt_position WHERE about IS NULL`
-	rows, err := d.Connection.Query(query)
-	checkErr(err)
-	defer rows.Close()
-
-	for rows.Next() {
-		var id int
-		var name string
-
-		err = rows.Scan(&id, &name)
-		positions = append(positions, models.Position{
-			Id:   id,
-			Name: name,
-		})
-
-	}
-	return
+	query := "SELECT id, name FROM test_gpt_position WHERE about IS NULL"
+	return d.GetPositionsByQuery(query)
 }
 
 func (d *Database) GetPositionWithoutWorkPlaces() (positions []models.Position) {
-	query := `SELECT id, name FROM test_gpt_position WHERE work_places IS NULL`
-	rows, err := d.Connection.Query(query)
-	checkErr(err)
-	defer rows.Close()
-
-	for rows.Next() {
-		var id int
-		var name string
-
-		err = rows.Scan(&id, &name)
-		positions = append(positions, models.Position{
-			Id:   id,
-			Name: name,
-		})
-
-	}
-	return
+	query := "SELECT id, name FROM test_gpt_position WHERE work_places IS NULL"
+	return d.GetPositionsByQuery(query)
 }
 
 func (d *Database) GetPositionWithoutSkills() (positions []models.Position) {
-	query := `SELECT id, name FROM test_gpt_position WHERE skills IS NULL`
-	rows, err := d.Connection.Query(query)
-	checkErr(err)
-	defer rows.Close()
-
-	for rows.Next() {
-		var id int
-		var name string
-
-		err = rows.Scan(&id, &name)
-		positions = append(positions, models.Position{
-			Id:   id,
-			Name: name,
-		})
-
-	}
-	return
+	query := "SELECT id, name FROM test_gpt_position WHERE skills IS NULL"
+	return d.GetPositionsByQuery(query)
 }
 
 func (d *Database) GetPositionWithoutOtherNames() (positions []models.Position) {
@@ -93,6 +33,10 @@ func (d *Database) GetPositionWithoutOtherNames() (positions []models.Position) 
 		LEFT JOIN test_gpt_position_to_position as pos_to_pos on pos_to_pos.position_id = pos.id
 		WHERE pos_to_pos.level = 0 AND other_names IS NULL
 	`
+	return d.GetPositionsByQuery(query)
+}
+
+func (d *Database) GetPositionsByQuery(query string) (positions []models.Position) {
 	rows, err := d.Connection.Query(query)
 	checkErr(err)
 	defer rows.Close()
