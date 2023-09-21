@@ -47,15 +47,13 @@ func main() {
 	case "subskills":
 		CollectForAllSkillsSubSkills(&database)
 	case "description":
-		FindDescriptionForAllPositions(&database)
+		FindDescriptionForAllsPositions(&database)
 	case "about":
-		FindAboutForAllPositions(&database)
+		FindAboutForAllsPositions(&database)
 	case "other_names":
-		FindOtherNamesForAllPositions(&database)
+		FindOtherNamesForAllsPositions(&database)
 	case "work_places":
 		FindWorkPlacesForAllPositions(&database)
-	case "skills":
-		FinSkillsForAllPositions(&database)
 	default:
 		panic(exitMessage)
 	}
@@ -123,7 +121,7 @@ func CollectForAllSkillsSubSkills(database *db.Database) {
 	}
 }
 
-func FindAboutForAllPositions(database *db.Database) {
+func FindAboutForAllsPositions(database *db.Database) {
 	fmt.Println("Ищем описание для профессии")
 	positions := database.GetPositionWithoutAbout()
 	for i, pos := range positions {
@@ -137,21 +135,21 @@ func FindAboutForAllPositions(database *db.Database) {
 	}
 }
 
-func FindDescriptionForAllPositions(database *db.Database) {
+func FindDescriptionForAllsPositions(database *db.Database) {
 	fmt.Println("Ищем полное описание для профессии")
 	positions := database.GetPositionWithoutDescription()
 	for i, pos := range positions {
 		descr, err := positionsGPT.GetDescriptionForPosition(pos.Name)
 		checkErr(err)
 		pos.Description = descr
-		database.UpdatePositionDescription(pos)
+		// database.UpdatePositionDescription(pos)
 		fmt.Printf("[%d/%d] Описание для профессии - %s (%d):\n %s\n\n", i+1, len(positions), pos.Name, pos.Id, pos.Description)
 		time.Sleep(time.Second * 10)
 
 	}
 }
 
-func FindOtherNamesForAllPositions(database *db.Database) {
+func FindOtherNamesForAllsPositions(database *db.Database) {
 	fmt.Println("Ищем полное описание для профессии")
 	positions := database.GetPositionWithoutOtherNames()
 	for i, pos := range positions {
@@ -174,20 +172,6 @@ func FindWorkPlacesForAllPositions(database *db.Database) {
 		pos.WorkPlaces = workPlaces
 		database.UpdatePositionWorkPlaces(pos)
 		fmt.Printf("[%d/%d] Места работы для профессии - %s (%d):\n %s\n\n", i+1, len(positions), pos.Name, pos.Id, pos.WorkPlaces)
-		time.Sleep(time.Second * 10)
-
-	}
-}
-
-func FinSkillsForAllPositions(database *db.Database) {
-	fmt.Println("Ищем навыки для профессии")
-	positions := database.GetPositionWithoutSkills()
-	for i, pos := range positions {
-		skills, err := positionsGPT.GetSkillsForPosition(pos.Name)
-		checkErr(err)
-		pos.Skills = skills
-		// database.UpdatePositionSkills(pos)
-		fmt.Printf("[%d/%d] Навыки для профессии - %s (%d):\n %s\n\n", i+1, len(positions), pos.Name, pos.Id, pos.Skills)
 		time.Sleep(time.Second * 10)
 
 	}
