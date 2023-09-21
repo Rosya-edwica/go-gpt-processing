@@ -48,7 +48,7 @@ func (d *Database) GetPositionWithoutAbout() (positions []models.Position) {
 }
 
 func (d *Database) GetPositionWithoutWorkPlaces() (positions []models.Position) {
-	query := `SELECT id, name FROM test_gpt_position WHERE work_places IS NULL`
+	query := `SELECT id, name FROM test_gpt_position WHERE work_places IS NULL LIMIT 50`
 	rows, err := d.Connection.Query(query)
 	checkErr(err)
 	defer rows.Close()
@@ -91,7 +91,7 @@ func (d *Database) GetPositionWithoutOtherNames() (positions []models.Position) 
 	query := `
 		SELECT pos.id, pos.name FROM test_gpt_position as pos
 		LEFT JOIN test_gpt_position_to_position as pos_to_pos on pos_to_pos.position_id = pos.id
-		WHERE pos_to_pos.level = 0
+		WHERE pos_to_pos.level = 0 AND other_names IS NULL
 	`
 	rows, err := d.Connection.Query(query)
 	checkErr(err)
