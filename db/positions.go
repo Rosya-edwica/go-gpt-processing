@@ -28,7 +28,7 @@ func (d *Database) GetPositionWithoutDescription() (positions []models.Position)
 }
 
 func (d *Database) GetPositionWithoutAbout() (positions []models.Position) {
-	query := `SELECT id, name FROM test_gpt_position WHERE about IS NULL LIMIT 50`
+	query := `SELECT id, name FROM test_gpt_position WHERE about IS NULL`
 	rows, err := d.Connection.Query(query)
 	checkErr(err)
 	defer rows.Close()
@@ -48,7 +48,7 @@ func (d *Database) GetPositionWithoutAbout() (positions []models.Position) {
 }
 
 func (d *Database) GetPositionWithoutWorkPlaces() (positions []models.Position) {
-	query := `SELECT id, name FROM test_gpt_position WHERE work_places IS NULL LIMIT 50`
+	query := `SELECT id, name FROM test_gpt_position WHERE work_places IS NULL`
 	rows, err := d.Connection.Query(query)
 	checkErr(err)
 	defer rows.Close()
