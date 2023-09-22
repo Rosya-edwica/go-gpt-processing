@@ -56,13 +56,13 @@ func (d *Database) GetPositionsByQuery(query string) (positions []models.Positio
 }
 
 func (d *Database) UpdatePositionDescription(pos models.Position) {
-	query := fmt.Sprintf(`UPDATE test_gpt_position SET description = '%s' WHERE id=%d`, pos.Description, pos.Id)
+	query := fmt.Sprintf(`UPDATE test_gpt_position SET description = '%s' WHERE id=%d`, strings.ReplaceAll(pos.Description, "'", "`"), pos.Id)
 	d.ExecuteQuery(query)
 	logger.Log.Printf("Полное описание для профессии - %s:%s", pos.Name, pos.Description)
 }
 
 func (d *Database) UpdatePositionAbout(pos models.Position) {
-	query := fmt.Sprintf(`UPDATE test_gpt_position SET about = '%s' WHERE id=%d`, pos.About, pos.Id)
+	query := fmt.Sprintf(`UPDATE test_gpt_position SET about = '%s' WHERE id=%d`, strings.ReplaceAll(pos.About, "'", "`"), pos.Id)
 	d.ExecuteQuery(query)
 	logger.Log.Printf("Короткое описание для профессии - %s:%s", pos.Name, pos.About)
 }
@@ -90,5 +90,6 @@ func convertArrayToSQLString(items []string) (result string) {
 	result = strings.Join(items, "|")
 	result = strings.ReplaceAll(result, ".", "")
 	result = strings.ToLower(result)
+	result = strings.ReplaceAll(result, "'", "`")
 	return
 }
