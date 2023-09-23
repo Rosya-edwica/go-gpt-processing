@@ -27,6 +27,10 @@ func (d *Database) GetPositionWithoutSkills() (positions []models.Position) {
 	return d.GetPositionsByQuery(query)
 }
 
+func (d *Database) GetPositionWithoutFuctions() (positions []models.Position) {
+	query := ""
+	return d.GetPositionsByQuery(query)
+}
 func (d *Database) GetPositionWithoutOtherNames() (positions []models.Position) {
 	query := `
 		SELECT pos.id, pos.name FROM test_gpt_position as pos
@@ -84,6 +88,12 @@ func (d *Database) UpdatePositionOtherNames(pos models.Position) {
 	query := fmt.Sprintf(`UPDATE test_gpt_position SET other_names = '%s' WHERE id=%d`, convertArrayToSQLString(pos.OtherNames), pos.Id)
 	d.ExecuteQuery(query)
 	logger.Log.Printf("Вариации написания для профессии - %s:%s", pos.Name, convertArrayToSQLString(pos.OtherNames))
+}
+
+func (d *Database) UpdatePositionFunctions(pos models.Position) {
+	query := ""
+	d.ExecuteQuery(query)
+	logger.Log.Printf("Функции для профессии - %s:%s", pos.Name, convertArrayToSQLString(pos.Functions))
 }
 
 func convertArrayToSQLString(items []string) (result string) {

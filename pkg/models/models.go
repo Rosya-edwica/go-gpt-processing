@@ -18,4 +18,5 @@ type Position struct {
 	WorkPlaces  []string
 	Skills      []string
 	OtherNames  []string
+	Functions	[]string
 }

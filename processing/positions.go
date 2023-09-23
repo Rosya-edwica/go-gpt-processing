@@ -83,3 +83,23 @@ func FindWorkPlacesForAllPositions(database *db.Database) {
 
 	}
 }
+
+func FindFunctionsForAllPositions(database *db.Database) {
+	fmt.Println("Ищем функции для профессии")
+	positions := database.GetPositionWithoutFuctions()
+	for i, pos := range positions {
+		functions, err := positionsGPT.GetFunctionsForPosition(pos.Name)
+		if err != nil {
+			Pause(120)
+			functions, err = positionsGPT.GetFunctionsForPosition(pos.Name)
+			if err != nil {
+				continue
+			}
+		}
+		pos.Functions = functions
+		database.UpdatePositionFunctions(pos)
+		fmt.Printf("[%d/%d] Функции для профессии - %s (%d):\n %s\n\n", i+1, len(positions), pos.Name, pos.Id, pos.Functions)
+		Pause(5)
+
+	}
+}
