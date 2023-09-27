@@ -140,3 +140,13 @@ func (d *Database) SaveSubskills(skill models.Skill) {
 		VALUES(%d, '%s')`, skill.Id, strings.Join(skill.SubSkills, "|"))
 	d.ExecuteQuery(query)
 }
+
+func (d *Database) SaveSkillsTest(skillId int, test models.Test) {
+	for _, question := range test.Questions {
+		query := fmt.Sprintf(`
+			INSERT IGNORE INTO demand_tests(demand_id, question, choices, answer)
+			VALUES (%d, '%s', '%s', '%s');`,
+			skillId, question.Text, strings.Join(question.Choices, "|"), question.Answer)
+		d.ExecuteQuery(query)
+	}
+}

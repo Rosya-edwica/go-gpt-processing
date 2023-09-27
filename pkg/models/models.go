@@ -18,5 +18,15 @@ type Position struct {
 	WorkPlaces  []string
 	Skills      []string
 	OtherNames  []string
-	Functions	[]string
+	Functions   []string
+}
+
+type Question struct {
+	Text    string
+	Choices []string
+	Answer  string
+}
+
+type Test struct {
+	Questions []Question
 }

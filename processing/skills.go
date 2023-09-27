@@ -69,3 +69,14 @@ func CollectForAllSkillsSubSkills(database *db.Database) {
 	}
 
 }
+
+func CollectForAllSkillsTests(database *db.Database) {
+	fmt.Println("Ищем тесты для навыков")
+	skills := database.GetSkills()
+	for i, skill := range skills {
+		test, err := skillsGPT.GetTestForSkill(skill.Name)
+		checkErr(err)
+		database.SaveSkillsTest(skill.Id, test)
+		fmt.Printf("[%d/%d] Тесты для навыка - %s:\n", i+1, len(skills), skill.Name)
+	}
+}
