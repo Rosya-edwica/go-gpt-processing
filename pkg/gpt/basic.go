@@ -14,7 +14,7 @@ import (
 
 func SendRequestToGPT(query string) (answer string, err error) {
 	client := openai.NewClient(os.Getenv("GPT_TOKEN"))
-	gptContext, cancel := context.WithTimeout(context.Background(), time.Second*60)
+	gptContext, cancel := context.WithTimeout(context.Background(), time.Second*120)
 	defer cancel()
 	response, err := client.CreateChatCompletion(
 		gptContext,

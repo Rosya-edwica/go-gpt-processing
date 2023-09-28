@@ -27,8 +27,15 @@ func (d *Database) GetPositionWithoutSkills() (positions []models.Position) {
 	return d.GetPositionsByQuery(query)
 }
 
+// Получаем список профессий, у которых нет связи с таблицей функций
 func (d *Database) GetPositionWithoutFuctions() (positions []models.Position) {
-	query := ""
+	query := `
+		SELECT id, name FROM test_gpt_position
+		WHERE id NOT IN (
+			SELECT DISTINCT position_id
+			FROM test_gpt_position_to_responsibility
+		)
+	`
 	return d.GetPositionsByQuery(query)
 }
 func (d *Database) GetPositionWithoutOtherNames() (positions []models.Position) {
@@ -90,16 +97,28 @@ func (d *Database) UpdatePositionOtherNames(pos models.Position) {
 	logger.Log.Printf("Вариации написания для профессии - %s:%s", pos.Name, convertArrayToSQLString(pos.OtherNames))
 }
 
-func (d *Database) UpdatePositionFunctions(pos models.Position) {
-	query := ""
-	d.ExecuteQuery(query)
+// Сохраняем сначала в отдельную таблицу функции
+func (d *Database) InsertPositionFunctions(pos models.Position) {
+	var functionsIds []int64
+	for _, item := range pos.Functions {
+		insertQuery := fmt.Sprintf(`INSERT INTO test_gpt_responsibility(name) VALUES('%s')`, item)
+		res, err := d.Connection.Exec(insertQuery)
+		checkErr(err)
+		id, err := res.LastInsertId()
+		checkErr(err)
+		functionsIds = append(functionsIds, id)
+	}
+	d.ConnectPositionWithFunctions(pos.Id, functionsIds)
 	logger.Log.Printf("Функции для профессии - %s:%s", pos.Name, convertArrayToSQLString(pos.Functions))
 }
 
-func convertArrayToSQLString(items []string) (result string) {
-	result = strings.Join(items, "|")
-	result = strings.ReplaceAll(result, ".", "")
-	result = strings.ToLower(result)
-	result = strings.ReplaceAll(result, "'", "`")
-	return
+// После того как сохранили новые функции, проставляем связь с функцией и профессией
+func (d *Database) ConnectPositionWithFunctions(posId int, functionsIds []int64) {
+	var inserts []string
+	for _, function := range functionsIds {
+		insertQuery := fmt.Sprintf(`(%d, %d)`, posId, function)
+		inserts = append(inserts, insertQuery)
+	}
+	query := "INSERT INTO test_gpt_position_to_responsibility(position_id, responsibility_id) VALUES " + strings.Join(inserts, ",")
+	d.ExecuteQuery(query)
 }

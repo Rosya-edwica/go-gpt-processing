@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go-gpt-processing/pkg/db"
 	"go-gpt-processing/pkg/gpt/positionsGPT"
+	"time"
 )
 
 func FindAboutForAllsPositions(database *db.Database) {
@@ -29,17 +30,12 @@ func FindDescriptionForAllsPositions(database *db.Database) {
 	fmt.Println("Ищем полное описание для профессии")
 	positions := database.GetPositionWithoutDescription()
 	for i, pos := range positions {
+		startTime := time.Now().Unix()
 		descr, err := positionsGPT.GetDescriptionForPosition(pos.Name)
-		if err != nil {
-			Pause(120)
-			descr, err = positionsGPT.GetDescriptionForPosition(pos.Name)
-			if err != nil {
-				continue
-			}
-		}
+		checkErr(err)
 		pos.Description = descr
 		database.UpdatePositionDescription(pos)
-		fmt.Printf("[%d/%d] Описание для профессии - %s (%d):\n %s\n\n", i+1, len(positions), pos.Name, pos.Id, pos.Description)
+		fmt.Printf("[%d/%d] Описание для профессии - %s (%d):\n %d seconds\n\n", i+1, len(positions), pos.Name, pos.Id, time.Now().Unix()-startTime)
 		Pause(5)
 	}
 }
@@ -88,17 +84,12 @@ func FindFunctionsForAllPositions(database *db.Database) {
 	fmt.Println("Ищем функции для профессии")
 	positions := database.GetPositionWithoutFuctions()
 	for i, pos := range positions {
+		startTime := time.Now().Unix()
 		functions, err := positionsGPT.GetFunctionsForPosition(pos.Name)
-		if err != nil {
-			Pause(120)
-			functions, err = positionsGPT.GetFunctionsForPosition(pos.Name)
-			if err != nil {
-				continue
-			}
-		}
+		checkErr(err)
 		pos.Functions = functions
-		database.UpdatePositionFunctions(pos)
-		fmt.Printf("[%d/%d] Функции для профессии - %s (%d):\n %s\n\n", i+1, len(positions), pos.Name, pos.Id, pos.Functions)
+		database.InsertPositionFunctions(pos)
+		fmt.Printf("[%d/%d] Функции для профессии - %s (%d):\n %d seconds.\n\n", i+1, len(positions), pos.Name, pos.Id, time.Now().Unix()-startTime)
 		Pause(5)
 
 	}

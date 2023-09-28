@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -38,4 +39,12 @@ func (d *Database) ExecuteQuery(query string) {
 
 func (d *Database) Close() {
 	d.Connection.Close()
+}
+
+func convertArrayToSQLString(items []string) (result string) {
+	result = strings.Join(items, "|")
+	result = strings.ReplaceAll(result, ".", "")
+	result = strings.ToLower(result)
+	result = strings.ReplaceAll(result, "'", "`")
+	return
 }
