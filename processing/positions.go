@@ -32,7 +32,11 @@ func FindDescriptionForAllsPositions(database *db.Database) {
 	for i, pos := range positions {
 		startTime := time.Now().Unix()
 		descr, err := positionsGPT.GetDescriptionForPosition(pos.Name)
-		checkErr(err)
+		if err != nil {
+			fmt.Println("Ошибка для профессии:", pos.Name, err)
+			Pause(10)
+			continue
+		}
 		pos.Description = descr
 		database.UpdatePositionDescription(pos)
 		fmt.Printf("[%d/%d] Описание для профессии - %s (%d):\n %d seconds\n\n", i+1, len(positions), pos.Name, pos.Id, time.Now().Unix()-startTime)
