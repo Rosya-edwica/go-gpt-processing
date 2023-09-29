@@ -9,7 +9,6 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-
 func GetUpdates() (countMessages int) {
 	json, _ := getJson(fmt.Sprintf("%s/getUpdates", getUrl()))
 	return len(gjson.Get(json, "result").Array())
@@ -17,7 +16,7 @@ func GetUpdates() (countMessages int) {
 
 func Mailing(text string) {
 	for _, chat := range chats {
-		SendMessage(text, chat)
+		SendMessage("GPT-processing:\n"+text, chat)
 	}
 }
 
@@ -25,7 +24,7 @@ func SendMessage(text string, chatId string) (bool, error) {
 	url := fmt.Sprintf("%s/sendMessage", getUrl())
 	body, _ := json.Marshal(map[string]string{
 		"chat_id": chatId,
-		"text": text,
+		"text":    text,
 	})
 	response, err := http.Post(
 		url,
