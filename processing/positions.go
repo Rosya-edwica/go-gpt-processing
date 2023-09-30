@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go-gpt-processing/pkg/db"
 	"go-gpt-processing/pkg/gpt/positionsGPT"
+	"strings"
 	"time"
 )
 
@@ -33,6 +34,9 @@ func FindDescriptionForAllsPositions(database *db.Database) {
 		startTime := time.Now().Unix()
 		descr, err := positionsGPT.GetDescriptionForPosition(pos.Name)
 		if err != nil {
+			if strings.Contains(err.Error(), "status code: 429") {
+				checkErr(err)
+			}
 			fmt.Println("Ошибка для профессии:", pos.Name, err)
 			Pause(10)
 			continue
