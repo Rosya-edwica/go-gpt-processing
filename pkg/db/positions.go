@@ -101,7 +101,7 @@ func (d *Database) UpdatePositionOtherNames(pos models.Position) {
 func (d *Database) InsertPositionFunctions(pos models.Position) {
 	var functionsIds []int64
 	for _, item := range pos.Functions {
-		insertQuery := fmt.Sprintf(`INSERT INTO test_gpt_responsibility(name) VALUES('%s')`, item)
+		insertQuery := fmt.Sprintf(`INSERT INTO test_gpt_responsibility(name) VALUES('%s')`, strings.ReplaceAll(item, "'", "`"))
 		res, err := d.Connection.Exec(insertQuery)
 		checkErr(err)
 		id, err := res.LastInsertId()
