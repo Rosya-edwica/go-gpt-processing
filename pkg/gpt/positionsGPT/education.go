@@ -1,6 +1,7 @@
 package positionsGPT
 
 import (
+	"errors"
 	"fmt"
 	"go-gpt-processing/pkg/gpt"
 	"strings"
@@ -20,7 +21,11 @@ func GetEducationForPosition(name string) (education []string, err error) {
 		Учитывай только специфику Российского образования.
 	`, name)
 	answer, err := gpt.SendRequestToGPT(question)
-
+	if !strings.Contains("без образования", strings.ToLower(answer)) &&
+		!strings.Contains("среднее профессиональное образование", strings.ToLower(answer)) &&
+		!strings.Contains("высшее образование", strings.ToLower(answer)) {
+		return []string{}, errors.New("Не получилось распарсить результат")
+	}
 	education = strings.Split(answer, ",")
 	if err != nil {
 		fmt.Println("Ошибка при подборе образования для вопроса: ", question)
