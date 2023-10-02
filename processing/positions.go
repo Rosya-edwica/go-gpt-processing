@@ -121,11 +121,13 @@ func FindEducationForAllPositions(database *db.Database) {
 		}
 		startTime := time.Now().Unix()
 		education, err := positionsGPT.GetEducationForPosition(pos.Name)
-		if err.Error() == "Не получилось распарсить результат" {
-			fmt.Println("Пустой результат для профессии:", pos.Name, pos.Id)
-			pos.Education = []string{""}
-		} else {
-			checkErr(err)
+		if err != nil {
+			if err.Error() == "Не получилось распарсить результат" {
+				fmt.Println("Пустой результат для профессии:", pos.Name, pos.Id)
+				pos.Education = []string{""}
+			} else {
+				checkErr(err)
+			}
 		}
 		pos.Education = education
 		database.UpdatePositionEducation(pos)
