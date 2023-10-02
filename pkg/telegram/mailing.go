@@ -14,9 +14,17 @@ func GetUpdates() (countMessages int) {
 	return len(gjson.Get(json, "result").Array())
 }
 
+func ErrorMessageMailing(text string) {
+	Mailing(fmt.Sprintf("%s 🛑", text))
+}
+
+func SuccessMessageMailing(text string) {
+	Mailing(fmt.Sprintf("%s ✅", text))
+}
+
 func Mailing(text string) {
 	for _, chat := range chats {
-		SendMessage("GPT-processing:\n"+text, chat)
+		SendMessage("Программа: Обработка навыков и профессий с помощью GPT\n"+text, chat)
 	}
 }
 

@@ -40,9 +40,21 @@ func (d *Database) GetPositionWithoutFuctions() (positions []models.Position) {
 }
 func (d *Database) GetPositionWithoutOtherNames() (positions []models.Position) {
 	query := `
-		SELECT pos.id, pos.name FROM test_gpt_position as pos
-		LEFT JOIN test_gpt_position_to_position as pos_to_pos on pos_to_pos.position_id = pos.id
-		WHERE pos_to_pos.level = 0 AND other_names IS NULL
+	SELECT 
+		position.id, position.name, position.other_names, position_to_position.level, position_to_position.parent_position_id 
+	FROM 
+		position 
+	LEFT JOIN 
+		position_to_position 
+	ON 
+		position_to_position.position_id = position.id 
+	WHERE 
+		level = 0 
+	OR 
+		level IS NULL 
+	ORDER BY 
+		position.id 
+	ASC
 	`
 	return d.GetPositionsByQuery(query)
 }
@@ -63,6 +75,25 @@ func (d *Database) GetPositionsByQuery(query string) (positions []models.Positio
 		})
 
 	}
+	return
+}
+
+func (d *Database) GetOnePositionWithoutEducation() (position models.Position) {
+	query := `
+		SELECT id, name 
+		FROM test_gpt_position 
+		WHERE education IS NULL
+		LIMIT 1;`
+	positions := d.GetPositionsByQuery(query)
+	if len(positions) == 0 {
+		return models.Position{}
+	} else {
+		return positions[0]
+	}
+}
+func (d *Database) CountPositionsWithoutEducation() (count int64) {
+	err := d.Connection.QueryRow("SELECT COUNT(*) FROM test_gpt_position WHERE education IS NULL").Scan(&count)
+	checkErr(err)
 	return
 }
 
@@ -120,5 +151,10 @@ func (d *Database) ConnectPositionWithFunctions(posId int, functionsIds []int64)
 		inserts = append(inserts, insertQuery)
 	}
 	query := "INSERT INTO test_gpt_position_to_responsibility(position_id, responsibility_id) VALUES " + strings.Join(inserts, ",")
+	d.ExecuteQuery(query)
+}
+
+func (d *Database) UpdatePositionEducation(pos models.Position) {
+	query := fmt.Sprintf(`UPDATE test_gpt_position SET education = '%s' WHERE id=%d`, convertArrayToSQLString(pos.Education), pos.Id)
 	d.ExecuteQuery(query)
 }

@@ -19,6 +19,7 @@ type Position struct {
 	Skills      []string
 	OtherNames  []string
 	Functions   []string
+	Education   []string
 }
 
 type Question struct {
