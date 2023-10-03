@@ -146,7 +146,14 @@ func FindLevelsForAllPositions(database *db.Database) {
 	for i, pos := range positions {
 		startTime := time.Now().Unix()
 		levels, err := positionsGPT.GetLevelsForPosition(pos)
-		checkErr(err)
+		if err != nil {
+			if err.Error() == "Не удалось подобрать уровни для профессии" {
+				Pause(10)
+				continue
+			} else {
+				checkErr(err)
+			}
+		}
 		pos.Levels = levels
 		fmt.Println(pos)
 		database.InsertPositionLevels(pos)

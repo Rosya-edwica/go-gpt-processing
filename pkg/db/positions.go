@@ -186,6 +186,9 @@ func (d *Database) UpdatePositionEducation(pos models.Position) {
 
 func (d *Database) InsertPositionLevels(position models.Position) {
 	for index, item := range position.Levels {
+		if len(item.Level) == 0 {
+			continue
+		}
 		insertQuery := fmt.Sprintf("INSERT INTO test_gpt_position(name) VALUES('%s')", strings.ReplaceAll(item.Level, "'", "`"))
 		res, err := d.Connection.Exec(insertQuery)
 		checkErr(err)
