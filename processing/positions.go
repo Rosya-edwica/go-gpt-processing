@@ -152,6 +152,7 @@ func FindLevelsForAllPositions(database *db.Database) {
 		database.InsertPositionLevels(pos)
 		fmt.Printf("[Осталось: %d] Уровни для профессии - %s (id:%d):%s\n %d seconds.\n\n", posCount-(i+1), pos.Name, pos.Id, pos.Levels[0].Level, time.Now().Unix()-startTime)
 		Pause(3)
-
 	}
+	telegram.SuccessMessageMailing("Поиск уровней для профессий завершился успешно")
+
 }
