@@ -9,6 +9,11 @@ type Skill struct {
 	GroupType     string
 	SubSkills     []string
 }
+type PositionLevel struct {
+	Level      string
+	Experience string
+	Salary     int
+}
 
 type Position struct {
 	Id          int
@@ -20,6 +25,7 @@ type Position struct {
 	OtherNames  []string
 	Functions   []string
 	Education   []string
+	Levels      []PositionLevel
 }
 
 type Question struct {

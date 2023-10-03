@@ -63,6 +63,8 @@ func detectProcessingType(database db.Database) {
 		processing.CollectForAllSkillsTests(&database)
 	case "education":
 		processing.FindEducationForAllPositions(&database)
+	case "levels":
+		processing.FindLevelsForAllPositions(&database)
 	default:
 		panic(exitMessage)
 	}

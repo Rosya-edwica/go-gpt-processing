@@ -78,12 +78,7 @@ func (d *Database) GetPositionsByQuery(query string) (positions []models.Positio
 	return
 }
 
-func (d *Database) GetOnePositionWithoutEducation() (position models.Position) {
-	query := `
-		SELECT id, name 
-		FROM test_gpt_position 
-		WHERE education IS NULL
-		LIMIT 1;`
+func (d *Database) GetOnePositionByQuery(query string) (position models.Position) {
 	positions := d.GetPositionsByQuery(query)
 	if len(positions) == 0 {
 		return models.Position{}
@@ -91,6 +86,36 @@ func (d *Database) GetOnePositionWithoutEducation() (position models.Position) {
 		return positions[0]
 	}
 }
+
+func (d *Database) GetOnePositionWithoutEducation() (position models.Position) {
+	query := `
+		SELECT id, name 
+		FROM test_gpt_position 
+		WHERE education IS NULL
+		LIMIT 1;`
+	return d.GetOnePositionByQuery(query)
+}
+
+func (d *Database) GetPositionsWithoutLevels() (position []models.Position) {
+	query := `
+		SELECT 
+		pos.id, pos.name
+		FROM 
+		test_gpt_position as pos
+		LEFT JOIN 
+		test_gpt_position_to_position as pos_to_pos 
+		ON 
+		pos_to_pos.position_id = pos.id 
+		WHERE 
+		(pos_to_pos.level IS NULL OR pos_to_pos.level=0)
+		AND pos.education NOT IN ('среднее профессиональное образование', 'без образования| среднее профессиональное образование')
+		HAVING 
+		(SELECT COUNT(*) FROM test_gpt_position_to_position WHERE parent_position_id=pos.id)=0
+		OR 
+		(SELECT MAX(level) FROM test_gpt_position_to_position WHERE parent_position_id=pos.id)=0`
+	return d.GetPositionsByQuery(query)
+}
+
 func (d *Database) CountPositionsWithoutEducation() (count int64) {
 	err := d.Connection.QueryRow("SELECT COUNT(*) FROM test_gpt_position WHERE education IS NULL").Scan(&count)
 	checkErr(err)
@@ -157,4 +182,21 @@ func (d *Database) ConnectPositionWithFunctions(posId int, functionsIds []int64)
 func (d *Database) UpdatePositionEducation(pos models.Position) {
 	query := fmt.Sprintf(`UPDATE test_gpt_position SET education = '%s' WHERE id=%d`, convertArrayToSQLString(pos.Education), pos.Id)
 	d.ExecuteQuery(query)
+}
+
+func (d *Database) InsertPositionLevels(position models.Position) {
+	for index, item := range position.Levels {
+		insertQuery := fmt.Sprintf("INSERT INTO test_gpt_position(name) VALUES('%s')", strings.ReplaceAll(item.Level, "'", "`"))
+		res, err := d.Connection.Exec(insertQuery)
+		checkErr(err)
+		levelId, err := res.LastInsertId()
+		checkErr(err)
+
+		insertQuery = fmt.Sprintf(
+			"INSERT INTO test_gpt_position_to_position(position_id, parent_position_id, level, experience, salary) VALUES(%d, %d, %d, '%s', %d)",
+			levelId, position.Id, index+1, item.Experience, item.Salary,
+		)
+		d.ExecuteQuery(insertQuery)
+
+	}
 }
