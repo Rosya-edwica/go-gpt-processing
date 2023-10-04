@@ -20,7 +20,7 @@ var reSubPositionNames = regexp.MustCompile(`\d+. | -`)                         
 var reSubExperience = regexp.MustCompile(`опыт работы:|,`)                                 //  0-1 год
 var reSubSalary = regexp.MustCompile(`средняя зарплата: |руб.*|средняя заработная плата `) // 30 000
 
-func GetLevelsForPosition(pos models.Position) (levels []models.PositionLevel, err error) {
+func GetLevelsForPosition(name string) (levels []models.PositionLevel, err error) {
 	question := fmt.Sprintf(`Составь уровни должности для профессии "%s". Список должен содержать только наименования уровней профессий. 
 		Составь список от самого начального уровня, до самого высшего, последние самые высокие уровни должны содержать уровни топ-менеджмента и директоров,
 		если данная профессия предполагает такой карьерный рост. Используй обобщенный вариант уровней профессий. 
@@ -29,7 +29,7 @@ func GetLevelsForPosition(pos models.Position) (levels []models.PositionLevel, e
 		Также для каждого уровня должности и требуемому опыту укажи среднюю заработную плату по России на 2021 год. 
 		Зарплаты укажи в точном значении, а не диапазоны. Учитывай только российский рынок. 
 		Учитывай только российские источники и ресурсы. Ответ предоставь в таком формате: "1. Уровень должности - опыт работы: срок, средняя зарплата: информация о зарплате"`,
-		pos.Name,
+		name,
 	)
 	answer, err := gpt.SendRequestToGPT(question)
 	fmt.Println(answer)

@@ -26,6 +26,8 @@ type Position struct {
 	Functions   []string
 	Education   []string
 	Levels      []PositionLevel
+	Experience  string
+	Salary      int
 }
 
 type Question struct {

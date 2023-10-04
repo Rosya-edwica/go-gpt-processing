@@ -145,7 +145,7 @@ func FindLevelsForAllPositions(database *db.Database) {
 	posCount := len(positions)
 	for i, pos := range positions {
 		startTime := time.Now().Unix()
-		levels, err := positionsGPT.GetLevelsForPosition(pos)
+		levels, err := positionsGPT.GetLevelsForPosition(pos.Name)
 		if err != nil {
 			if err.Error() == "Не удалось подобрать уровни для профессии" {
 				Pause(10)
@@ -161,5 +161,34 @@ func FindLevelsForAllPositions(database *db.Database) {
 		Pause(3)
 	}
 	telegram.SuccessMessageMailing("Поиск уровней для профессий завершился успешно")
+
+}
+
+func FindExperienceAndSalaryForLevelPositions(database *db.Database) {
+	fmt.Println("Подбираем опыт работы и зарплату для уровней , у которых их нет")
+
+	for {
+		parentId := database.GetParentIdForLevelsWithoutExperienceAndSalary()
+		if parentId == 0 {
+			break
+		}
+		positions := database.GetPositionsLevelsWithoutExperienceAndSalaryByParentId(parentId)
+		startTime := time.Now().Unix()
+		updated, err := positionsGPT.GetLevelInfoForPosition(positions)
+		if err != nil {
+			if err.Error() == "Не удалось подобрать уровни для профессии" {
+				Pause(10)
+				continue
+			} else {
+				checkErr(err)
+			}
+		}
+		database.UpdatePositionsLevelExperienceAndSalary(updated, parentId)
+		fmt.Printf("ParentID: %d - %dseconds.\n", parentId, time.Now().Unix()-startTime)
+		break
+		Pause(3)
+	}
+
+	// telegram.SuccessMessageMailing("Подбор опыта и зарплаты для дочерних профессий завершился успешно")
 
 }

@@ -116,6 +116,50 @@ func (d *Database) GetPositionsWithoutLevels() (position []models.Position) {
 	return d.GetPositionsByQuery(query)
 }
 
+func (d *Database) GetPositionsLevelsWithoutExperienceAndSalary() (position []models.Position) {
+	query := `
+		SELECT pos.id, pos.name 
+		FROM test_gpt_position AS pos
+		LEFT JOIN test_gpt_position_to_position AS pos_to_pos on pos_to_pos.position_id=pos.id
+		WHERE pos_to_pos.experience IS NULL 
+		AND pos_to_pos.salary IS NULL 
+		AND pos_to_pos.position_id IS NOT NULL 
+		AND pos_to_pos.level != 0	
+		`
+	return d.GetPositionsByQuery(query)
+}
+
+func (d *Database) GetParentIdForLevelsWithoutExperienceAndSalary() (id int) {
+	err := d.Connection.QueryRow(`
+		SELECT DISTINCT pos2.id
+		FROM test_gpt_position AS pos
+		LEFT JOIN test_gpt_position_to_position AS pos_to_pos on pos_to_pos.position_id=pos.id
+		LEFT JOIN test_gpt_position as pos2 ON pos2.id = pos_to_pos.parent_position_id
+		WHERE pos_to_pos.experience IS NULL 
+		AND pos_to_pos.salary IS NULL 
+		AND pos_to_pos.position_id IS NOT NULL 
+		AND pos_to_pos.level != 0
+		LIMIT 1;
+	`).Scan(&id)
+	checkErr(err)
+	return
+}
+
+func (d *Database) GetPositionsLevelsWithoutExperienceAndSalaryByParentId(id int) (positions []models.Position) {
+	query := fmt.Sprintf(`
+		SELECT pos.id, pos.name 
+		FROM test_gpt_position AS pos
+		LEFT JOIN test_gpt_position_to_position AS pos_to_pos on pos_to_pos.position_id=pos.id
+		WHERE pos_to_pos.experience IS NULL 
+		AND pos_to_pos.salary IS NULL 
+		AND pos_to_pos.position_id IS NOT NULL 
+		AND pos_to_pos.level != 0	
+		AND pos_to_pos.parent_position_id = %d
+		ORDER BY pos_to_pos.level ASC
+		`, id)
+	return d.GetPositionsByQuery(query)
+}
+
 func (d *Database) CountPositionsWithoutEducation() (count int64) {
 	err := d.Connection.QueryRow("SELECT COUNT(*) FROM test_gpt_position WHERE education IS NULL").Scan(&count)
 	checkErr(err)
@@ -202,4 +246,21 @@ func (d *Database) InsertPositionLevels(position models.Position) {
 		d.ExecuteQuery(insertQuery)
 
 	}
+}
+
+func (d *Database) UpdatePositionsLevelExperienceAndSalary(positions []models.Position, parentId int) {
+	for _, pos := range positions {
+		d.UpdateOnePositionLevelExperienceAndSalary(pos, parentId)
+	}
+}
+
+func (d *Database) UpdateOnePositionLevelExperienceAndSalary(pos models.Position, parentId int) {
+	query := fmt.Sprintf(`
+		UPDATE test_gpt_position_to_position
+		SET experience = '%s',
+		salary = %d
+		WHERE position_id = %d
+		AND parent_position_id = %d
+	`, pos.Experience, pos.Salary, pos.Id, parentId)
+	d.ExecuteQuery(query)
 }
