@@ -56,7 +56,10 @@ func FindDescriptionForAllsPositions(database *db.Database) {
 func FindOtherNamesForAllsPositions(database *db.Database) {
 	fmt.Println("Ищем другие наименования для профессии")
 	positions := database.GetPositionWithoutOtherNames()
+	posCount := len(positions)
 	for i, pos := range positions {
+		startTime := time.Now().Unix()
+		posCount -= i + 1
 		otherNames, err := positionsGPT.GetOtherNamesForPosition(pos.Name)
 		if err != nil {
 			Pause(120)
@@ -67,8 +70,9 @@ func FindOtherNamesForAllsPositions(database *db.Database) {
 		}
 		pos.OtherNames = otherNames
 		database.UpdatePositionOtherNames(pos)
-		fmt.Printf("[%d/%d] Другие написания для профессии - %s (%d):\n %s\n\n", i+1, len(positions), pos.Name, pos.Id, pos.OtherNames)
-		Pause(5)
+		fmt.Printf("[Осталось: %d] Другие написания для профессии - %s (%d):\n %s\n\n", posCount, pos.Name, pos.Id, strings.Join(pos.OtherNames, "|"))
+		fmt.Println(time.Now().Unix()-startTime, "seconds...")
+		Pause(3)
 	}
 	telegram.SuccessMessageMailing("Поиск других наименований для профессий завершился успешно")
 
@@ -185,7 +189,6 @@ func FindExperienceAndSalaryForLevelPositions(database *db.Database) {
 		}
 		database.UpdatePositionsLevelExperienceAndSalary(updated, parentId)
 		fmt.Printf("ParentID: %d - %dseconds.\n", parentId, time.Now().Unix()-startTime)
-		break
 		Pause(3)
 	}
 

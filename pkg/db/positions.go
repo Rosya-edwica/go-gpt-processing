@@ -41,17 +41,16 @@ func (d *Database) GetPositionWithoutFuctions() (positions []models.Position) {
 func (d *Database) GetPositionWithoutOtherNames() (positions []models.Position) {
 	query := `
 	SELECT 
-		position.id, position.name, position.other_names, position_to_position.level, position_to_position.parent_position_id 
+		position.id, position.name
 	FROM 
-		position 
+		test_gpt_position as position 
 	LEFT JOIN 
-		position_to_position 
+		test_gpt_position_to_position as position_to_position 
 	ON 
 		position_to_position.position_id = position.id 
 	WHERE 
-		level = 0 
-	OR 
-		level IS NULL 
+		(level = 0 OR level IS NULL)
+		AND other_names IS NULL 
 	ORDER BY 
 		position.id 
 	ASC
