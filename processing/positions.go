@@ -59,7 +59,6 @@ func FindOtherNamesForAllsPositions(database *db.Database) {
 	posCount := len(positions)
 	for i, pos := range positions {
 		startTime := time.Now().Unix()
-		posCount -= i + 1
 		otherNames, err := positionsGPT.GetOtherNamesForPosition(pos.Name)
 		if err != nil {
 			Pause(120)
@@ -70,7 +69,7 @@ func FindOtherNamesForAllsPositions(database *db.Database) {
 		}
 		pos.OtherNames = otherNames
 		database.UpdatePositionOtherNames(pos)
-		fmt.Printf("[Осталось: %d] Другие написания для профессии - %s (%d):\n %s\n\n", posCount, pos.Name, pos.Id, strings.Join(pos.OtherNames, "|"))
+		fmt.Printf("[Осталось: %d/%d] Другие написания для профессии - %s (%d):\n %s\n\n", i+1, posCount, pos.Name, pos.Id, strings.Join(pos.OtherNames, "|"))
 		fmt.Println(time.Now().Unix()-startTime, "seconds...")
 		Pause(3)
 	}
