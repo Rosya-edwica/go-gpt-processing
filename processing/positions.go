@@ -170,18 +170,13 @@ func FindLevelsForAllPositions(database *db.Database) {
 
 func FindExperienceAndSalaryForLevelPositions(database *db.Database) {
 	fmt.Println("Подбираем опыт работы и зарплату для уровней , у которых их нет")
-
-	for {
-		parentId := database.GetParentIdForLevelsWithoutExperienceAndSalary()
-		if parentId == 0 {
-			break
-		}
+	parentIds := database.GetParentIdsForLevelsWithoutExperienceAndSalary()
+	for _, parentId := range parentIds {
 		positions := database.GetPositionsLevelsWithoutExperienceAndSalaryByParentId(parentId)
 		startTime := time.Now().Unix()
 		updated, err := positionsGPT.GetLevelInfoForPosition(positions)
 		if err != nil {
-			if err.Error() == "Не удалось подобрать уровни для профессии" {
-				Pause(10)
+			if err.Error() == "GPT не знает что ответить" {
 				continue
 			} else {
 				checkErr(err)

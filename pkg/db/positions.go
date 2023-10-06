@@ -128,9 +128,9 @@ func (d *Database) GetPositionsLevelsWithoutExperienceAndSalary() (position []mo
 	return d.GetPositionsByQuery(query)
 }
 
-func (d *Database) GetParentIdForLevelsWithoutExperienceAndSalary() (id int) {
-	err := d.Connection.QueryRow(`
-		SELECT DISTINCT pos2.id
+func (d *Database) GetParentIdsForLevelsWithoutExperienceAndSalary() (ids []int) {
+	query := `
+		SELECT DISTINCT pos2.id, pos2.name
 		FROM test_gpt_position AS pos
 		LEFT JOIN test_gpt_position_to_position AS pos_to_pos on pos_to_pos.position_id=pos.id
 		LEFT JOIN test_gpt_position as pos2 ON pos2.id = pos_to_pos.parent_position_id
@@ -138,9 +138,11 @@ func (d *Database) GetParentIdForLevelsWithoutExperienceAndSalary() (id int) {
 		AND pos_to_pos.salary IS NULL 
 		AND pos_to_pos.position_id IS NOT NULL 
 		AND pos_to_pos.level != 0
-		LIMIT 1;
-	`).Scan(&id)
-	checkErr(err)
+	`
+	positions := d.GetPositionsByQuery(query)
+	for _, i := range positions {
+		ids = append(ids, i.Id)
+	}
 	return
 }
 

@@ -29,6 +29,7 @@ func GetLevelInfoForPosition(positions []models.Position) (updated []models.Posi
 	Ответ запиши в формате: [профессия - зарплата - опыт]. Пояснений давать не нужно. 
 	Зарплату необходимо указать в абсолютном значении без диапазона. Опыт - в диапазоне.`, names)
 	answer, err := gpt.SendRequestToGPT(question)
+	fmt.Println(answer)
 	if err != nil {
 		return []models.Position{}, err
 	}

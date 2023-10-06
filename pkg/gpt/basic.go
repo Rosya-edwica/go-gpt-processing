@@ -32,6 +32,9 @@ func SendRequestToGPT(query string) (answer string, err error) {
 		return "", err
 	}
 	answer = response.Choices[0].Message.Content
+	if strings.Contains(strings.ToLower(answer), "извините") {
+		return "", errors.New("GPT не знает что ответить")
+	}
 	return
 }
 
