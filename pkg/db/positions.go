@@ -278,6 +278,8 @@ func (d *Database) GetPositionsByProfArea(area string) (positions []models.Posit
 			LEFT JOIN prof_area_to_specialty ON prof_area_to_specialty.id=position_to_prof_area.area_id
 			LEFT JOIN professional_area ON professional_area.id=prof_area_to_specialty.prof_area_id
 			WHERE LOWER(professional_area.name) IN ('%s'))
+			AND position.id NOT IN (
+				SELECT DISTINCT position_id FROM position_to_demand)
 
 	`, strings.ToLower(area))
 

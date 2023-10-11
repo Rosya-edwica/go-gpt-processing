@@ -195,7 +195,6 @@ func FindSkillsForPositions(database *db.Database) {
 	positions := database.GetPositionsByProfArea("Сельское хозяйство")
 	posCount := len(positions)
 	for i, pos := range positions {
-		posCount -= i + 1
 		startTime := time.Now().Unix()
 		skills, err := positionsGPT.GetSkillsForPosition(pos.Name, pos.ProfArea)
 		if err != nil {
@@ -207,6 +206,6 @@ func FindSkillsForPositions(database *db.Database) {
 		}
 		pos.Skills = skills
 		database.SavePositionSkills(pos)
-		fmt.Printf("[осталось: %d] Навыки для профессии - %s (%d): %s\n%d seconds.\n", posCount, pos.Name, pos.Id, strings.Join(pos.Skills, "|"), time.Now().Unix()-startTime)
+		fmt.Printf("[осталось: %d/%d] Навыки для профессии - %s (%d): %s\n%d seconds.\n", i, posCount, pos.Name, pos.Id, strings.Join(pos.Skills, "|"), time.Now().Unix()-startTime)
 	}
 }
