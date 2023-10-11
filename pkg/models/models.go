@@ -8,6 +8,7 @@ type Skill struct {
 	IsValid       bool
 	GroupType     string
 	SubSkills     []string
+	Description   string
 }
 type PositionLevel struct {
 	Level      string
@@ -18,6 +19,7 @@ type PositionLevel struct {
 type Position struct {
 	Id          int
 	Name        string
+	ProfArea    string
 	About       string
 	Description string
 	WorkPlaces  []string

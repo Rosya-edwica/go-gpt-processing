@@ -189,3 +189,24 @@ func FindExperienceAndSalaryForLevelPositions(database *db.Database) {
 	// telegram.SuccessMessageMailing("Подбор опыта и зарплаты для дочерних профессий завершился успешно")
 
 }
+
+func FindSkillsForPositions(database *db.Database) {
+	fmt.Println("Подбираем навыки для профессиий")
+	positions := database.GetPositionsByProfArea("Сельское хозяйство")
+	posCount := len(positions)
+	for i, pos := range positions {
+		posCount -= i + 1
+		startTime := time.Now().Unix()
+		skills, err := positionsGPT.GetSkillsForPosition(pos.Name, pos.ProfArea)
+		if err != nil {
+			fmt.Println("GPT-errr:", err)
+			continue
+		}
+		if len(skills) < 10 {
+			continue
+		}
+		pos.Skills = skills
+		database.SavePositionSkills(pos)
+		fmt.Printf("[осталось: %d] Навыки для профессии - %s (%d): %s\n%d seconds.\n", posCount, pos.Name, pos.Id, strings.Join(pos.Skills, "|"), time.Now().Unix()-startTime)
+	}
+}

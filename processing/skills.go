@@ -80,3 +80,18 @@ func CollectForAllSkillsTests(database *db.Database) {
 		fmt.Printf("[%d/%d] Тесты для навыка - %s:\n", i+1, len(skills), skill.Name)
 	}
 }
+
+func CollectDescriptionForAllSkills(database *db.Database) {
+	fmt.Println("Подбираем описание для навыков")
+	skills := database.GetNullableSkillsInColumn("description")
+	count := len(skills)
+	for i, skill := range skills {
+		count -= i + 1
+		description, err := skillsGPT.GetDescriptionForSkill(skill.Name)
+		checkErr(err)
+		skill.Description = description
+		database.UpdateSkillColumn(skill.Id, "description", skill.Description)
+		fmt.Printf("[Осталось: %d] Описание для навыка: %s - %s\n", count, skill.Name, skill.Description)
+	}
+	fmt.Println("Отправка уведомления в телеграм")
+}

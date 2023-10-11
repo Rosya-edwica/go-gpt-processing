@@ -49,7 +49,7 @@ func detectProcessingType(database db.Database) {
 		processing.CheckAllSkillsForGroupType(&database)
 	case "subskills":
 		processing.CollectForAllSkillsSubSkills(&database)
-	case "description":
+	case "position_descr":
 		processing.FindDescriptionForAllsPositions(&database)
 	case "about":
 		processing.FindAboutForAllsPositions(&database)
@@ -67,6 +67,10 @@ func detectProcessingType(database db.Database) {
 		processing.FindLevelsForAllPositions(&database)
 	case "experience_salary":
 		processing.FindExperienceAndSalaryForLevelPositions(&database)
+	case "skills_descr":
+		processing.CollectDescriptionForAllSkills(&database)
+	case "position_skills":
+		processing.FindSkillsForPositions(&database)
 	default:
 		panic(exitMessage)
 	}
