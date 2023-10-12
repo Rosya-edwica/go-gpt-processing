@@ -107,7 +107,8 @@ func (d *Database) GetPositionsWithoutLevels() (position []models.Position) {
 		pos_to_pos.position_id = pos.id 
 		WHERE 
 		(pos_to_pos.level IS NULL OR pos_to_pos.level=0)
-		AND pos.education NOT IN ('среднее профессиональное образование', 'без образования| среднее профессиональное образование')
+		AND
+		(pos.education NOT IN ('среднее профессиональное образование', 'без образования| среднее профессиональное образование') OR education IS NULL)
 		HAVING 
 		(SELECT COUNT(*) FROM test_gpt_position_to_position WHERE parent_position_id=pos.id)=0
 		OR 
