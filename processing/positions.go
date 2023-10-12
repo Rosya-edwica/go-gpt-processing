@@ -214,4 +214,6 @@ func FindSkillsInProfArea(database *db.Database, area string) {
 		database.SavePositionSkills(pos)
 		fmt.Printf("[осталось: %d/%d] Навыки для профессии - %s (%d): %s\n%d seconds.\n", i+1, posCount, pos.Name, pos.Id, strings.Join(pos.Skills, "|"), timeEx)
 	}
+	message := fmt.Sprintf("Подобрали навыки для ненулевых профессий из профобласти - %s\nКоличество профессий:%d", area, posCount)
+	telegram.SuccessMessageMailing(message)
 }
