@@ -9,7 +9,7 @@ import (
 
 func GetWorkPlacesForPosition(name string) (workPlaces []string, err error) {
 	question := fmt.Sprintf(`Составь список из 6 мест где может работать %s . Пиши в строчку. Не используй нумерацию. В качестве разделителя используй знак ,`, name)
-	answer, err := gpt.SendRequestToGPT(question)
+	answer, _, err := gpt.SendRequestToGPT(question)
 	workPlaces = strings.Split(answer, ",")
 
 	if len(workPlaces) <= 1 {

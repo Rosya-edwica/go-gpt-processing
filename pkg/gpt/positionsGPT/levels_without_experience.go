@@ -28,7 +28,7 @@ func GetLevelInfoForPosition(positions []models.Position) (updated []models.Posi
 	Зарплата должна расти в зависимости от уровня профессии, используй данные на 2021 год, используй только российские источники. 
 	Ответ запиши в формате: [профессия - зарплата - опыт]. Пояснений давать не нужно. 
 	Зарплату необходимо указать в абсолютном значении без диапазона. Опыт - в диапазоне.`, names)
-	answer, err := gpt.SendRequestToGPT(question)
+	answer, _, err := gpt.SendRequestToGPT(question)
 	fmt.Println(answer)
 	if err != nil {
 		return []models.Position{}, err

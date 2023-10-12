@@ -45,7 +45,7 @@ func CheckSkillsForTypeGroup(skill *models.Skill) (err error) {
 	Desire to work in a combat unit, sports nutrition, experience in active sales, 
 	2nd Special Police Regiment of the Main Department of the Ministry of Internal Affairs of Russia in Moscow, speed of work, Gosts, Teaching staff.
 	`, skill.Name)
-	answer, err := gpt.SendRequestToGPT(strings.TrimSpace(question))
+	answer, _, err := gpt.SendRequestToGPT(strings.TrimSpace(question))
 	fmt.Println(answer)
 	if err != nil {
 		return errors.New(fmt.Sprintf("ОШИБКА: %s", err.Error()))

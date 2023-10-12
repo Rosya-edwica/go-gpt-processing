@@ -31,7 +31,7 @@ func GetLevelsForPosition(name string) (levels []models.PositionLevel, err error
 		Учитывай только российские источники и ресурсы. Ответ предоставь в таком формате: "1. Уровень должности - опыт работы: срок, средняя зарплата: информация о зарплате"`,
 		name,
 	)
-	answer, err := gpt.SendRequestToGPT(question)
+	answer, _, err := gpt.SendRequestToGPT(question)
 	fmt.Println(answer)
 	if err != nil {
 		return []models.PositionLevel{}, err

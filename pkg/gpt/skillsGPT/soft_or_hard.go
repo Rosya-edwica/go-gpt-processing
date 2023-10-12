@@ -27,13 +27,13 @@ func CheckSkillIsSoftOrHard(softOrHard string, skill *models.Skill) (err error) 
 		Now answer the question Yes or No: Is "%s" a hard-skill?`, skill.Name)
 	}
 
-	answer, err = gpt.SendRequestToGPT(question)
+	answer, _, err = gpt.SendRequestToGPT(question)
 	if err != nil {
 		for {
 			if strings.Contains(err.Error(), "context deadline exceeded") {
 				return
 			}
-			answer, err = (gpt.SendRequestToGPT(question))
+			answer, _, err = (gpt.SendRequestToGPT(question))
 			if err == nil {
 				break
 			}

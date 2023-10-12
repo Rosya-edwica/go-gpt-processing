@@ -17,7 +17,7 @@ var answerRegexpSub = regexp.MustCompile(`Ответ: |\n|\( ответ \)|\w\) 
 
 func GetTestForSkill(query string) (test models.Test, err error) {
 	gptQuestion := fmt.Sprintf("Для изучения навыка '%s' составь тест из 10 вопросов с вариантами ответов в такой структуре: 1. Вопрос\na) первый вариант\nb) второй вариант\nc) третий вариант\nd) четвертый вариант\nОтвет: полный вариант", query)
-	answer, err := gpt.SendRequestToGPT(gptQuestion)
+	answer, _, err := gpt.SendRequestToGPT(gptQuestion)
 	if err != nil {
 		fmt.Println(err)
 		return models.Test{}, err

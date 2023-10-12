@@ -12,7 +12,9 @@ import (
 	openai "github.com/sashabaranov/go-openai"
 )
 
-func SendRequestToGPT(query string) (answer string, err error) {
+func SendRequestToGPT(query string) (answer string, exTime int64, err error) {
+	startTime := time.Now().Unix()
+
 	client := openai.NewClient(os.Getenv("GPT_TOKEN"))
 	gptContext, cancel := context.WithTimeout(context.Background(), time.Second*120)
 	defer cancel()
@@ -28,12 +30,13 @@ func SendRequestToGPT(query string) (answer string, err error) {
 			},
 		},
 	)
+	exTime = time.Now().Unix() - startTime
 	if err != nil {
-		return "", err
+		return "", exTime, err
 	}
 	answer = response.Choices[0].Message.Content
 	if strings.Contains(strings.ToLower(answer), "извините") {
-		return "", errors.New("GPT не знает что ответить")
+		return "", exTime, errors.New("GPT не знает что ответить")
 	}
 	return
 }

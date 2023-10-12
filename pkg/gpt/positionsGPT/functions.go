@@ -9,7 +9,7 @@ import (
 
 func GetFunctionsForPosition(name string) (functions []string, err error) {
 	question := fmt.Sprintf(`Составь список из 10 профессиональных функций профессии "%s". Пиши в строчку. Не используй нумерацию. В качестве разделителя используй знак ,`, name)
-	answer, err := gpt.SendRequestToGPT(question)
+	answer, _, err := gpt.SendRequestToGPT(question)
 	functions = strings.Split(answer, ",")
 	if err != nil {
 		fmt.Println("Ошибка при подборе функций для вопроса: ", question)

@@ -9,7 +9,7 @@ import (
 
 func GetAboutForPosition(name string) (about string, err error) {
 	question := fmt.Sprintf(`Составь описание профессии "%s" в одну строчку`, name)
-	about, err = gpt.SendRequestToGPT(question)
+	about, _, err = gpt.SendRequestToGPT(question)
 	if about == "" {
 		return "", errors.New(fmt.Sprintf("Пустое описание для профессии: %s", name))
 	} else if strings.Contains(strings.ToLower(about), "я не могу") {

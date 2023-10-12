@@ -10,11 +10,11 @@ import (
 func CheckSkillsForDuplicates(skillsPair *models.Skill) (err error) {
 	var answer string
 	question := fmt.Sprintf("Можно ли считать эти навыки дубликатами: '%s' и '%s'? Ответь Да или Нет.", skillsPair.Name, skillsPair.DuplicateName)
-	answer, err = gpt.SendRequestToGPT(question)
+	answer, _, err = gpt.SendRequestToGPT(question)
 	if err != nil {
 		for {
 			fmt.Println(err)
-			answer, err = (gpt.SendRequestToGPT(question))
+			answer, _, err = (gpt.SendRequestToGPT(question))
 			if err == nil {
 				break
 			}

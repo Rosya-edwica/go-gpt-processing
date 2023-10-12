@@ -191,12 +191,18 @@ func FindExperienceAndSalaryForLevelPositions(database *db.Database) {
 }
 
 func FindSkillsForPositions(database *db.Database) {
-	fmt.Println("Подбираем навыки для профессиий")
-	positions := database.GetPositionsByProfArea("Сельское хозяйство")
+	profAreaas := database.GetProfAreaList()
+	for _, area := range profAreaas {
+		FindSkillsInProfArea(database, area)
+	}
+}
+
+func FindSkillsInProfArea(database *db.Database, area string) {
+	positions := database.GetPositionsByProfArea(area)
 	posCount := len(positions)
+	fmt.Printf("Подбираем навыки для профессиий из профобласти:%s (Количество профессий:%d)\n", area, posCount)
 	for i, pos := range positions {
-		startTime := time.Now().Unix()
-		skills, err := positionsGPT.GetSkillsForPosition(pos.Name, pos.ProfArea)
+		skills, timeEx, err := positionsGPT.GetSkillsForPosition(pos.Name, pos.ProfArea)
 		if err != nil {
 			fmt.Println("GPT-errr:", err)
 			continue
@@ -206,6 +212,6 @@ func FindSkillsForPositions(database *db.Database) {
 		}
 		pos.Skills = skills
 		database.SavePositionSkills(pos)
-		fmt.Printf("[осталось: %d/%d] Навыки для профессии - %s (%d): %s\n%d seconds.\n", i, posCount, pos.Name, pos.Id, strings.Join(pos.Skills, "|"), time.Now().Unix()-startTime)
+		fmt.Printf("[осталось: %d/%d] Навыки для профессии - %s (%d): %s\n%d seconds.\n", i+1, posCount, pos.Name, pos.Id, strings.Join(pos.Skills, "|"), timeEx)
 	}
 }

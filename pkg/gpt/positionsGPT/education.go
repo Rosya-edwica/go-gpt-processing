@@ -20,7 +20,7 @@ func GetEducationForPosition(name string) (education []string, err error) {
 		"Среднее профессиональное образование" и "Высшее образование". Запиши ответы без ковычек, в одну строку, через знак запятая. 
 		Учитывай только специфику Российского образования.
 	`, name)
-	answer, err := gpt.SendRequestToGPT(question)
+	answer, _, err := gpt.SendRequestToGPT(question)
 	if !strings.Contains("без образования", strings.ToLower(answer)) &&
 		!strings.Contains("среднее профессиональное образование", strings.ToLower(answer)) &&
 		!strings.Contains("высшее образование", strings.ToLower(answer)) {
