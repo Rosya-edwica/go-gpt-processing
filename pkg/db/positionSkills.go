@@ -11,7 +11,8 @@ func (d *Database) GetPositionsByProfArea(area string) (positions []models.Posit
 	query := fmt.Sprintf(`
 	SELECT  position.id, position.name from position_to_position 
 	left join position on position.id = position_to_position.position_id
-	where parent_position_id in
+	WHERE position_to_position.level != 0 
+	AND parent_position_id in
 	(SELECT position.id
 			FROM position
 			LEFT JOIN position_to_prof_area ON position_to_prof_area.position_id=position.id
