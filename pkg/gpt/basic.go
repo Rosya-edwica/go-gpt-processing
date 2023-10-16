@@ -1,6 +1,7 @@
 package gpt
 
 import (
+	"bufio"
 	"context"
 	"errors"
 	"fmt"
@@ -71,10 +72,24 @@ func AddCostToAmount(usage openai.Usage) {
 
 	price := float64(questionTokens)*QuestionTokenPrice + float64(answerTokens)*AnswerTokenPrice
 
-	amount, err := strconv.ParseFloat(os.Getenv("GPT_4_AMOUNT"), 64)
+	file, err := os.Open("amount.txt")
 	if err != nil {
 		panic(err)
 	}
+	scanner := bufio.NewScanner(file)
+	var amount float64
+	for scanner.Scan() {
+		amount, err = strconv.ParseFloat(scanner.Text(), 64)
+		fmt.Println(err)
+	}
+	file.Close()
 	amount += price
-	os.Setenv("GPT_4_AMOUNT", fmt.Sprintf("%f", amount))
+
+	file, err = os.Create("amount.txt")
+	defer file.Close()
+	_, err = file.WriteString(fmt.Sprintf("%f", amount))
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(amount)
 }
