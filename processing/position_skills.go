@@ -19,6 +19,9 @@ func FindSkillsInProfArea(database *db.Database, area string) {
 
 	positions := database.GetPositionsByProfArea(area)
 	posCount := len(positions)
+	if posCount == 0 {
+		return
+	}
 	for i, pos := range positions {
 		skills, timeEx, err := positionsGPT.GetSkillsForPosition(pos.Name, pos.ProfArea)
 		if err != nil {
