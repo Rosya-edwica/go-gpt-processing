@@ -1,3 +1,4 @@
+// position_skills - получение профессий без навыков, сохранение новых навыков и связывание профессии с навыками
 package db
 
 import (
@@ -7,13 +8,17 @@ import (
 	"strings"
 )
 
-func (d *Database) GetPositionsByProfArea(area string) (positions []models.Position) {
-	query := fmt.Sprintf(`
-	SELECT  position.id, position.name from position_to_position 
-	left join position on position.id = position_to_position.position_id
-	WHERE position_to_position.level != 0 
-	AND parent_position_id in
-	(SELECT position.id
+const (
+	QuerySelectProfessionalAreas            = "SELECT name FROM professional_area"
+	QueryInsertNewSkill                     = "INSERT INTO demand(name) VALUES('%s')"
+	QueryCheckSkillExists                   = "SELECT id FROM demand WHERE LOWER(name) = '%s'"
+	QueryInsertLinkBetweenPositionAndSkills = "INSERT INTO position_to_demand(position_id, demand_id, is_custom, is_chatgpt, is_delete) VALUES "
+	QuerySelectPositionsByProfArea          = `
+		SELECT  position.id, position.name from position_to_position 
+		left join position on position.id = position_to_position.position_id
+		WHERE position_to_position.level != 0 
+		AND parent_position_id in
+		(SELECT position.id
 			FROM position
 			LEFT JOIN position_to_prof_area ON position_to_prof_area.position_id=position.id
 			LEFT JOIN prof_area_to_specialty ON prof_area_to_specialty.id=position_to_prof_area.area_id
@@ -21,8 +26,25 @@ func (d *Database) GetPositionsByProfArea(area string) (positions []models.Posit
 			WHERE LOWER(professional_area.name) IN ('%s'))
 			AND position.id NOT IN (
 				SELECT DISTINCT position_id FROM position_to_demand)
+	`
+)
 
-	`, strings.ToLower(area))
+func (d *Database) GetProfAreaList() (areas []string) {
+	query := QuerySelectProfessionalAreas
+	rows, err := d.Connection.Query(query)
+	checkErr(err)
+	defer rows.Close()
+	for rows.Next() {
+		var name string
+		err = rows.Scan(&name)
+		checkErr(err)
+		areas = append(areas, name)
+	}
+	return
+}
+
+func (d *Database) GetPositionsByProfArea(area string) (positions []models.Position) {
+	query := fmt.Sprintf(QuerySelectPositionsByProfArea, strings.ToLower(area))
 
 	rows, err := d.Connection.Query(query)
 	checkErr(err)
@@ -48,7 +70,7 @@ func (d *Database) SaveDemand(name string) (demandId int64, err error) {
 	if demandId != 0 {
 		return
 	}
-	query := fmt.Sprintf("INSERT INTO demand(name) VALUES('%s')", strings.ReplaceAll(name, "'", "`"))
+	query := fmt.Sprintf(QueryInsertNewSkill, strings.ReplaceAll(name, "'", "`"))
 	res, err := d.Connection.Exec(query)
 	if err != nil {
 		return 0, err
@@ -69,7 +91,7 @@ func (d *Database) SaveDemand(name string) (demandId int64, err error) {
 
 func (d *Database) CheckDemandExist(name string) (demandId int64) {
 	lowerName := strings.ToLower(name)
-	query := fmt.Sprintf("SELECT id FROM demand WHERE LOWER(name) = '%s'", lowerName)
+	query := fmt.Sprintf(QueryCheckSkillExists, lowerName)
 	err := d.Connection.QueryRow(query).Scan(&demandId)
 	if err != nil {
 		if err.Error() == "no rows in result set" {
@@ -106,23 +128,7 @@ func (d *Database) JoinPositionWithSkills(posId int, skillsIds []int64) {
 		insertQuery := fmt.Sprintf(`(%d, %d, 1, true, false)`, posId, id)
 		inserts = append(inserts, insertQuery)
 	}
-	query := "INSERT INTO position_to_demand(position_id, demand_id, is_custom, is_chatgpt, is_delete) VALUES " + strings.Join(inserts, ",")
+	query := QueryInsertLinkBetweenPositionAndSkills + strings.Join(inserts, ",")
 	d.ExecuteQuery(query)
-	fmt.Println(posId)
-	fmt.Println("Success!")
 
-}
-
-func (d *Database) GetProfAreaList() (areas []string) {
-	query := "SELECT name FROM professional_area"
-	rows, err := d.Connection.Query(query)
-	checkErr(err)
-	defer rows.Close()
-	for rows.Next() {
-		var name string
-		err = rows.Scan(&name)
-		checkErr(err)
-		areas = append(areas, name)
-	}
-	return
 }

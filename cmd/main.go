@@ -50,9 +50,9 @@ func detectProcessingType(database db.Database) {
 	case "subskills":
 		processing.CollectForAllSkillsSubSkills(&database)
 	case "position_descr":
-		processing.FindDescriptionForAllsPositions(&database)
+		processing.FindDescriptionForAllPositions(&database)
 	case "about":
-		processing.FindAboutForAllsPositions(&database)
+		processing.FindAboutForAllPositions(&database)
 	case "other_names":
 		processing.FindOtherNamesForAllsPositions(&database)
 	case "work_places":

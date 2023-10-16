@@ -6,10 +6,16 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
 	openai "github.com/sashabaranov/go-openai"
+)
+
+const (
+	QuestionTokenPrice = 0.03 / 1000
+	AnswerTokenPrice   = 0.06 / 1000
 )
 
 func SendRequestToGPT(query string) (answer string, exTime int64, err error) {
@@ -35,6 +41,8 @@ func SendRequestToGPT(query string) (answer string, exTime int64, err error) {
 		return "", exTime, err
 	}
 	answer = response.Choices[0].Message.Content
+	AddCostToAmount(response.Usage)
+
 	if strings.Contains(strings.ToLower(answer), "извините") {
 		return "", exTime, errors.New("GPT не знает что ответить")
 	}
@@ -55,4 +63,18 @@ func ConvertAnswerToBoolean(answer string) (bool, error) {
 	default:
 		return false, errors.New(fmt.Sprintf("Неправильный ответ: %s", answer))
 	}
+}
+
+func AddCostToAmount(usage openai.Usage) {
+	questionTokens := usage.PromptTokens
+	answerTokens := usage.CompletionTokens
+
+	price := float64(questionTokens)*QuestionTokenPrice + float64(answerTokens)*AnswerTokenPrice
+
+	amount, err := strconv.ParseFloat(os.Getenv("GPT_4_AMOUNT"), 64)
+	if err != nil {
+		panic(err)
+	}
+	amount += price
+	os.Setenv("GPT_4_AMOUNT", fmt.Sprintf("%f", amount))
 }

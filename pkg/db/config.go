@@ -24,6 +24,10 @@ func (d *Database) Connect() {
 	d.Connection = connection
 }
 
+func (d *Database) Close() {
+	d.Connection.Close()
+}
+
 func checkErr(err error) {
 	if err != nil {
 		panic(err)
@@ -35,10 +39,6 @@ func (d *Database) ExecuteQuery(query string) {
 	_, err := d.Connection.Exec(query)
 	checkErr(err)
 	tx.Commit()
-}
-
-func (d *Database) Close() {
-	d.Connection.Close()
 }
 
 func convertArrayToSQLString(items []string) (result string) {

@@ -7,13 +7,13 @@ import (
 	"strings"
 )
 
-func GetAboutForPosition(name string) (about string, err error) {
+func GetAboutForPosition(name string) (about string, timeEx int64, err error) {
 	question := fmt.Sprintf(`Составь описание профессии "%s" в одну строчку`, name)
-	about, _, err = gpt.SendRequestToGPT(question)
+	about, timeEx, err = gpt.SendRequestToGPT(question)
 	if about == "" {
-		return "", errors.New(fmt.Sprintf("Пустое описание для профессии: %s", name))
+		return "", timeEx, errors.New(fmt.Sprintf("Пустое описание для профессии: %s", name))
 	} else if strings.Contains(strings.ToLower(about), "я не могу") {
-		return "", errors.New(fmt.Sprintf("Неправильный ответ '%s' для профессии - %s", about, name))
+		return "", timeEx, errors.New(fmt.Sprintf("Неправильный ответ '%s' для профессии - %s", about, name))
 	}
 	return
 }
