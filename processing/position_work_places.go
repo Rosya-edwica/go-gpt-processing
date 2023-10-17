@@ -15,11 +15,7 @@ func FindWorkPlacesForAllPositions(database *db.Database) {
 	posCount := len(positions)
 	for i, pos := range positions {
 		workPlaces, timeEx, err := positionsGPT.GetWorkPlacesForPosition(pos.Name)
-		if err != nil {
-			fmt.Printf("%s\t ERROR:%s\n", op, err)
-			Pause(30)
-			continue
-		}
+		checkErr(err)
 		pos.WorkPlaces = workPlaces
 		database.UpdatePositionWorkPlaces(pos)
 		fmt.Printf("%s\t[%d/%d] %s (Time: %d s)\n", op, i+1, posCount, pos.Name, timeEx)

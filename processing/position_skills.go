@@ -24,14 +24,7 @@ func FindSkillsInProfArea(database *db.Database, area string) {
 	}
 	for i, pos := range positions {
 		skills, timeEx, err := positionsGPT.GetSkillsForPosition(pos.Name, pos.ProfArea)
-		if err != nil {
-			fmt.Printf("%s\t ERROR:%s\n", op, err)
-			Pause(30)
-			continue
-		}
-		if len(skills) < 10 {
-			continue
-		}
+		checkErr(err)
 		pos.Skills = skills
 		database.SavePositionSkills(pos)
 		fmt.Printf("%s\t[%d/%d] %s (Time: %d s)\n", op, i+1, posCount, pos.Name, timeEx)

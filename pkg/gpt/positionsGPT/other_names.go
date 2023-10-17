@@ -1,7 +1,6 @@
 package positionsGPT
 
 import (
-	"errors"
 	"fmt"
 	"go-gpt-processing/pkg/gpt"
 	"strings"
@@ -12,13 +11,8 @@ func GetOtherNamesForPosition(name string) (otherNames []string, timeEx int64, e
 	answer, timeEx, err := gpt.SendRequestToGPT(question)
 	otherNames = strings.Split(answer, ",")
 
-	if len(otherNames) <= 1 {
-		return nil, timeEx, errors.New(fmt.Sprintf("Не удалось поделить ответ по запятым: %s", answer))
-	}
-	if answer == "" {
-		return nil, timeEx, errors.New(fmt.Sprintf("Пустое описание для профессии: %s", name))
-	} else if strings.Contains(strings.ToLower(answer), "я не могу") {
-		return nil, timeEx, errors.New(fmt.Sprintf("Неправильный ответ '%s' для профессии - %s", answer, name))
+	if len(otherNames) <= 1 || answer == "" || strings.Contains(strings.ToLower(answer), "я не могу") {
+		return nil, 0, WrongAnswerError
 	}
 	return
 }

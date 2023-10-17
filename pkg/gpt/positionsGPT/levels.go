@@ -1,7 +1,6 @@
 package positionsGPT
 
 import (
-	"errors"
 	"fmt"
 	"go-gpt-processing/pkg/gpt"
 	"go-gpt-processing/pkg/models"
@@ -32,13 +31,12 @@ func GetLevelsForPosition(name string) (levels []models.PositionLevel, timeEx in
 		name,
 	)
 	answer, timeEx, err := gpt.SendRequestToGPT(question)
-	fmt.Println(answer)
 	if err != nil {
-		return []models.PositionLevel{}, timeEx, err
+		return []models.PositionLevel{}, 0, err
 	}
 	levels = parseAnswerToPositionLevels(answer)
 	if len(levels) == 0 || levels[0].Level == "" {
-		return []models.PositionLevel{}, timeEx, errors.New("Не удалось подобрать уровни для профессии")
+		return []models.PositionLevel{}, timeEx, WrongAnswerError
 	}
 	return
 }

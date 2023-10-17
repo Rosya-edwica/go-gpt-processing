@@ -6,12 +6,11 @@ import (
 	"strings"
 )
 
-func (d *Database) GetSkillsPair() (skills models.Skill) {
+func (d *Database) GetAllSkillsPair() (skills []models.Skill) {
 	query := `
 		SELECT id, demand_name, dup_demand_name
 		FROM demand_duplicate
-		WHERE is_duplicate_gpt IS NULL
-		LIMIT 1`
+		WHERE is_duplicate_gpt IS NULL`
 
 	rows, err := d.Connection.Query(query)
 	checkErr(err)
@@ -20,11 +19,12 @@ func (d *Database) GetSkillsPair() (skills models.Skill) {
 		var id int
 
 		err = rows.Scan(&id, &first, &dupName)
-		skills = models.Skill{
+		pair := models.Skill{
 			Id:            id,
 			Name:          first,
 			DuplicateName: dupName,
 		}
+		skills = append(skills, pair)
 	}
 	return
 }
@@ -37,20 +37,20 @@ func (d *Database) UpdatePair(skills models.Skill) {
 	d.ExecuteQuery(query)
 }
 
-func (d *Database) GetSkill(softOrHard string) (skill models.Skill) {
+func (d *Database) GetSkillsHardSkills(softOrHard string) (skills []models.Skill) {
 	var query string
 	if softOrHard == "soft" {
 		query = `
 		SELECT id, translated
 		FROM demand
 		WHERE is_soft_gpt IS NULL AND is_hard_gpt IS NOT TRUE AND is_custom IS NOT TRUE AND type_group = 'навык' AND is_deleted IS FALSE
-		LIMIT 1`
+		`
 	} else {
 		query = `
 		SELECT id, translated
 		FROM demand
 		WHERE is_soft_gpt IS NOT TRUE AND is_hard_gpt IS NULL AND is_custom IS NOT TRUE AND type_group = 'навык' AND is_deleted IS FALSE
-		LIMIT 1`
+		`
 	}
 
 	rows, err := d.Connection.Query(query)
@@ -60,10 +60,11 @@ func (d *Database) GetSkill(softOrHard string) (skill models.Skill) {
 		var id int
 
 		err = rows.Scan(&id, &name)
-		skill = models.Skill{
+		skill := models.Skill{
 			Id:   id,
 			Name: name,
 		}
+		skills = append(skills, skill)
 	}
 	return
 }
@@ -85,12 +86,11 @@ func (d *Database) UpdateSkill(softOrHard string, skill models.Skill) {
 
 }
 
-func (d *Database) GetSkillWithoutGroup() (skill models.Skill) {
+func (d *Database) GetSkillsWithoutGroup() (skills []models.Skill) {
 	query := `
 		SELECT id, translated
 		FROM demand
-		WHERE translated IS NOT NULL AND type_group IS NULL
-		LIMIT 1`
+		WHERE translated IS NOT NULL AND type_group IS NULL`
 	rows, err := d.Connection.Query(query)
 	checkErr(err)
 	for rows.Next() {
@@ -98,10 +98,11 @@ func (d *Database) GetSkillWithoutGroup() (skill models.Skill) {
 		var id int
 
 		err = rows.Scan(&id, &name)
-		skill = models.Skill{
+		skill := models.Skill{
 			Id:   id,
 			Name: name,
 		}
+		skills = append(skills, skill)
 	}
 	return
 }

@@ -15,12 +15,12 @@ var choicesRegexpSub = regexp.MustCompile(`\w\) |\n|\( ответ \)`)
 var answerRegexp = regexp.MustCompile(`Ответ:.*|\w\) .*\( ответ \)`)
 var answerRegexpSub = regexp.MustCompile(`Ответ: |\n|\( ответ \)|\w\) `)
 
-func GetTestForSkill(query string) (test models.Test, err error) {
+func GetTestForSkill(query string) (test models.Test, exTime int64, err error) {
 	gptQuestion := fmt.Sprintf("Для изучения навыка '%s' составь тест из 10 вопросов с вариантами ответов в такой структуре: 1. Вопрос\na) первый вариант\nb) второй вариант\nc) третий вариант\nd) четвертый вариант\nОтвет: полный вариант", query)
-	answer, _, err := gpt.SendRequestToGPT(gptQuestion)
+	answer, exTime, err := gpt.SendRequestToGPT(gptQuestion)
 	if err != nil {
 		fmt.Println(err)
-		return models.Test{}, err
+		return models.Test{}, exTime, err
 	}
 	test = ParseTest(strings.TrimSpace(answer))
 	return

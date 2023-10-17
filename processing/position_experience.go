@@ -16,11 +16,7 @@ func FindExperienceAndSalaryForLevelPositions(database *db.Database) {
 	for i, parentId := range parentIds {
 		positions := database.GetPositionsLevelsWithoutExperienceAndSalaryByParentId(parentId)
 		updated, timeEx, err := positionsGPT.GetLevelInfoForPosition(positions)
-		if err != nil {
-			fmt.Printf("%s\t ERROR:%s\n", op, err)
-			Pause(30)
-			continue
-		}
+		checkErr(err)
 		database.UpdatePositionsLevelExperienceAndSalary(updated, parentId)
 		fmt.Printf("%s\t[%d/%d] %d (Time: %d s)\n", op, i+1, posCount, parentId, timeEx)
 		Pause(3)

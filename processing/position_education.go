@@ -18,9 +18,7 @@ func FindEducationForAllPositions(database *db.Database) {
 			break
 		}
 		education, timeEx, err := positionsGPT.GetEducationForPosition(pos.Name)
-		if err != nil {
-
-		}
+		checkErr(err)
 		pos.Education = education
 		database.UpdatePositionEducation(pos)
 		fmt.Printf("%s\t[Осталось: %d] %s (Time: %d s)\n", op, posCount, pos.Name, timeEx)

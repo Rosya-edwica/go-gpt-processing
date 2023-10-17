@@ -7,14 +7,14 @@ import (
 	"regexp"
 )
 
-func GetSubSkills(query string) (skills []string, err error) {
+func GetSubSkills(query string) (skills []string, exTime int64, err error) {
 	question := fmt.Sprintf(`
 	какими hard-skills нужно обладать, чтобы изучить "%s" - сократи ответ до перечня навыков
 	`, query)
 
-	answer, _, err := gpt.SendRequestToGPT(question)
+	answer, exTime, err := gpt.SendRequestToGPT(question)
 	if err != nil {
-		return []string{}, errors.New(fmt.Sprintf("ОШИБКА: %s", err.Error()))
+		return []string{}, exTime, errors.New(fmt.Sprintf("ОШИБКА: %s", err.Error()))
 	}
 	reLines := regexp.MustCompile(`\d+. .*?\n`)
 	reDigits := regexp.MustCompile(`\d+. |\n`)

@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"go-gpt-processing/pkg/gpt"
 	"go-gpt-processing/pkg/logger"
-	"go-gpt-processing/pkg/models"
 	"strings"
 )
 
-func CheckSkillsForTypeGroup(skill *models.Skill) (err error) {
+func CheckSkillsForTypeGroup(name string) (groupType string, exTime int64, err error) {
 	question := fmt.Sprintf(` Identify which category the word "%s" belongs to. 
 	If it is a skill, ability or competence, mark it as 1. 
 	If it is a profession or position, mark as 2. Otherwise, mark as 3.
@@ -44,23 +43,21 @@ func CheckSkillsForTypeGroup(skill *models.Skill) (err error) {
 	desire to earn, special equipment, tractor, car, cargo, tractor, neat appearance, Civil Defense, Ministry of Internal Affairs, 
 	Desire to work in a combat unit, sports nutrition, experience in active sales, 
 	2nd Special Police Regiment of the Main Department of the Ministry of Internal Affairs of Russia in Moscow, speed of work, Gosts, Teaching staff.
-	`, skill.Name)
-	answer, _, err := gpt.SendRequestToGPT(strings.TrimSpace(question))
+	`, name)
+	answer, exTime, err := gpt.SendRequestToGPT(strings.TrimSpace(question))
 	fmt.Println(answer)
 	if err != nil {
-		return errors.New(fmt.Sprintf("ОШИБКА: %s", err.Error()))
+		return "", exTime, errors.New(fmt.Sprintf("ОШИБКА: %s", err.Error()))
 	}
 	if strings.Contains(answer, "профессия/специальность/должность") || strings.Contains(answer, "2") {
-		skill.GroupType = "профессия"
+		groupType = "профессия"
 	} else if strings.Contains(answer, "навык") || strings.Contains(answer, "1") {
-		skill.GroupType = "навык"
+		groupType = "навык"
 	} else if strings.Contains(answer, "другое") || strings.Contains(answer, "3") {
-		skill.GroupType = "другое"
+		groupType = "другое"
 	} else {
-		return errors.New(fmt.Sprintf("Неправильный ответ: ответ - %s. вопрос: %s", answer, question))
+		return "", exTime, errors.New(fmt.Sprintf("Неправильный ответ: ответ - %s. вопрос: %s", answer, question))
 	}
-
 	logger.Log.Printf("Ответ '%s' для вопроса: %s", answer, question)
-
 	return
 }

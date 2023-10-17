@@ -36,7 +36,7 @@ func GetLevelInfoForPosition(positions []models.Position) (updated []models.Posi
 
 	lines := reLines.FindAllString(answer, -1)
 	if len(lines) != len(positions) {
-		return []models.Position{}, timeEx, err
+		return []models.Position{}, timeEx, WrongAnswerError
 	}
 	for i, pos := range positions {
 		levelInfo := parseAnswerToLevelInfo(lines[i])
@@ -45,7 +45,7 @@ func GetLevelInfoForPosition(positions []models.Position) (updated []models.Posi
 		updated = append(updated, pos)
 	}
 
-	return updated, timeEx, err
+	return
 }
 
 func allPositionsNameToString(positions []models.Position) (names string) {

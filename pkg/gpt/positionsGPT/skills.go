@@ -1,7 +1,6 @@
 package positionsGPT
 
 import (
-	"errors"
 	"fmt"
 	"go-gpt-processing/pkg/gpt"
 	"regexp"
@@ -18,15 +17,13 @@ func GetSkillsForPosition(name string, profarea string) (skills []string, timeEx
 	Навыки должны относиться к профобласти "%s"`,
 		name, profarea)
 	answer, timeEx, err := gpt.SendRequestToGPT(question)
-	skills = reLines.FindAllString(answer, -1)
-
-	if len(skills) <= 1 {
-		return nil, timeEx, errors.New(fmt.Sprintf("Не удалось поделить ответ по запятым: %s", answer))
+	if err != nil {
+		return nil, 0, err
 	}
-	if answer == "" {
-		return nil, timeEx, errors.New(fmt.Sprintf("Пустое ответ для профессии: %s", name))
-	} else if strings.Contains(strings.ToLower(answer), "я не могу") {
-		return nil, timeEx, errors.New(fmt.Sprintf("Неправильный ответ '%s' для профессии - %s", answer, name))
+
+	skills = reLines.FindAllString(answer, -1)
+	if len(skills) <= 1 || answer == "" || strings.Contains(strings.ToLower(answer), "я не могу") {
+		return nil, 0, WrongAnswerError
 	}
 
 	var skillsWithoutDigitPoint []string
