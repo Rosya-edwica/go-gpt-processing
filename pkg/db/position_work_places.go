@@ -19,5 +19,5 @@ func (d *Database) GetPositionWithoutWorkPlaces() (positions []models.Position) 
 func (d *Database) UpdatePositionWorkPlaces(pos models.Position) {
 	query := fmt.Sprintf(QueryUpdatePositionWorkPlaces, convertArrayToSQLString(pos.WorkPlaces), pos.Id)
 	d.ExecuteQuery(query)
-	logger.Log.Printf("Места работы для профессии - %s:%s", pos.Name, convertArrayToSQLString(pos.WorkPlaces))
+	logger.LogInfo.Printf("Места работы для профессии - %s:%s", pos.Name, convertArrayToSQLString(pos.WorkPlaces))
 }

@@ -15,19 +15,16 @@ func FindSkillsForPositions(database *db.Database) {
 }
 
 func FindSkillsInProfArea(database *db.Database, area string) {
-	var op = "processing.position_skills"
-
 	positions := database.GetPositionsByProfArea(area)
 	posCount := len(positions)
 	if posCount == 0 {
 		return
 	}
-	for i, pos := range positions {
-		skills, timeEx, err := positionsGPT.GetSkillsForPosition(pos.Name, pos.ProfArea)
+	for _, pos := range positions {
+		skills, err := positionsGPT.GetSkillsForPosition(pos.Name, pos.ProfArea)
 		checkErr(err)
 		pos.Skills = skills
 		database.SavePositionSkills(pos)
-		fmt.Printf("%s\t[%d/%d] %s (Time: %d s)\n", op, i+1, posCount, pos.Name, timeEx)
 
 	}
 	SuccessMessage := fmt.Sprintf("Подобрали навыки для ненулевых профессий из профобласти - %s\nКоличество профессий:%d", area, posCount)

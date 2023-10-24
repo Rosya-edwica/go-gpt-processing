@@ -36,7 +36,7 @@ func (d *Database) InsertPositionFunctions(pos models.Position) {
 		functionsIds = append(functionsIds, id)
 	}
 	d.ConnectPositionWithFunctions(pos.Id, functionsIds)
-	logger.Log.Printf("Функции для профессии - %s:%s", pos.Name, convertArrayToSQLString(pos.Functions))
+	logger.LogInfo.Printf("Функции для профессии - %s:%s", pos.Name, convertArrayToSQLString(pos.Functions))
 }
 
 // После того как сохранили новые функции, проставляем связь с функцией и профессией

@@ -22,21 +22,20 @@ type LevelInfo struct {
 	Salary     int
 }
 
-func GetLevelInfoForPosition(positions []models.Position) (updated []models.Position, timeEx int64, err error) {
+func GetLevelInfoForPosition(positions []models.Position) (updated []models.Position, err error) {
 	names := allPositionsNameToString(positions)
 	question := fmt.Sprintf(`Напиши зарплату в рублях и опыт для профессий ниже: %s
 	Зарплата должна расти в зависимости от уровня профессии, используй данные на 2021 год, используй только российские источники. 
 	Ответ запиши в формате: [профессия - зарплата - опыт]. Пояснений давать не нужно. 
 	Зарплату необходимо указать в абсолютном значении без диапазона. Опыт - в диапазоне.`, names)
-	answer, timeEx, err := gpt.SendRequestToGPT(question)
-	fmt.Println(answer)
-	if err != nil {
-		return []models.Position{}, timeEx, err
+	resp := gpt.SendRequestToGPT(question)
+	if resp.Error != nil {
+		return []models.Position{}, resp.Error
 	}
 
-	lines := reLines.FindAllString(answer, -1)
+	lines := reLines.FindAllString(resp.Answer, -1)
 	if len(lines) != len(positions) {
-		return []models.Position{}, timeEx, WrongAnswerError
+		return []models.Position{}, gpt.WrongAnswerError
 	}
 	for i, pos := range positions {
 		levelInfo := parseAnswerToLevelInfo(lines[i])

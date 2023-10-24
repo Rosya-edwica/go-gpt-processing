@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"fmt"
+	"go-gpt-processing/pkg/logger"
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -17,20 +18,24 @@ type Database struct {
 	Connection *sql.DB
 }
 
+const logPrefix = "database: "
+
 func (d *Database) Connect() {
 	connectionUrl := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", d.User, d.Password, d.Host, d.Port, d.Name)
 	connection, err := sql.Open("mysql", connectionUrl)
 	checkErr(err)
 	d.Connection = connection
+	logger.LogWarning.Println(logPrefix + "Открыли соединение")
 }
 
 func (d *Database) Close() {
 	d.Connection.Close()
+	logger.LogWarning.Println(logPrefix + "Закрыли соединение")
 }
 
 func checkErr(err error) {
 	if err != nil {
-		panic(err)
+		logger.LogError.Fatal(logPrefix + err.Error())
 	}
 }
 

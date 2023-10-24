@@ -5,7 +5,7 @@ import (
 	"go-gpt-processing/pkg/gpt"
 )
 
-func CheckSkillIsSoftOrHard(softOrHard string, name string) (result bool, exTime int64, err error) {
+func CheckSkillIsSoftOrHard(softOrHard string, name string) (result bool, err error) {
 	var answer, question string
 	if softOrHard == "soft" {
 		question = fmt.Sprintf(`Look at examples of hard and soft skils. 
@@ -24,9 +24,9 @@ func CheckSkillIsSoftOrHard(softOrHard string, name string) (result bool, exTime
 		Now answer the question Yes or No: Is "%s" a hard-skill?`, name)
 	}
 
-	answer, exTime, err = gpt.SendRequestToGPT(question)
-	if err != nil {
-		return false, 0, err
+	resp := gpt.SendRequestToGPT(question)
+	if resp.Error != nil {
+		return false, resp.Error
 	}
 	result, err = gpt.ConvertAnswerToBoolean(answer)
 	return

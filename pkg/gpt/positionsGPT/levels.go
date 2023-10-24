@@ -19,7 +19,7 @@ var reSubPositionNames = regexp.MustCompile(`\d+. | -`)                         
 var reSubExperience = regexp.MustCompile(`опыт работы:|,`)                                 //  0-1 год
 var reSubSalary = regexp.MustCompile(`средняя зарплата: |руб.*|средняя заработная плата `) // 30 000
 
-func GetLevelsForPosition(name string) (levels []models.PositionLevel, timeEx int64, err error) {
+func GetLevelsForPosition(name string) (levels []models.PositionLevel, err error) {
 	question := fmt.Sprintf(`Составь уровни должности для профессии "%s". Список должен содержать только наименования уровней профессий. 
 		Составь список от самого начального уровня, до самого высшего, последние самые высокие уровни должны содержать уровни топ-менеджмента и директоров,
 		если данная профессия предполагает такой карьерный рост. Используй обобщенный вариант уровней профессий. 
@@ -30,13 +30,13 @@ func GetLevelsForPosition(name string) (levels []models.PositionLevel, timeEx in
 		Учитывай только российские источники и ресурсы. Ответ предоставь в таком формате: "1. Уровень должности - опыт работы: срок, средняя зарплата: информация о зарплате"`,
 		name,
 	)
-	answer, timeEx, err := gpt.SendRequestToGPT(question)
-	if err != nil {
-		return []models.PositionLevel{}, 0, err
+	resp := gpt.SendRequestToGPT(question)
+	if resp.Error != nil {
+		return []models.PositionLevel{}, resp.Error
 	}
-	levels = parseAnswerToPositionLevels(answer)
+	levels = parseAnswerToPositionLevels(resp.Answer)
 	if len(levels) == 0 || levels[0].Level == "" {
-		return []models.PositionLevel{}, timeEx, WrongAnswerError
+		return []models.PositionLevel{}, gpt.WrongAnswerError
 	}
 	return
 }

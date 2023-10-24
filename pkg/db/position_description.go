@@ -20,6 +20,6 @@ func (d *Database) GetPositionWithoutDescription() (positions []models.Position)
 func (d *Database) UpdatePositionDescription(pos models.Position) {
 	query := fmt.Sprintf(QueryUpdatePositionDescription, strings.ReplaceAll(pos.Description, "'", "`"), pos.Id)
 	d.ExecuteQuery(query)
-	logger.Log.Printf("Полное описание для профессии - %s:%s", pos.Name, pos.Description)
+	logger.LogInfo.Printf("Полное описание для профессии - %s:%s", pos.Name, pos.Description)
 
 }

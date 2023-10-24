@@ -1,24 +1,42 @@
 package logger
 
 import (
-	"flag"
 	"fmt"
 	"log"
 	"os"
 )
 
 var (
-	Log *log.Logger
+	LogInfo    *log.Logger
+	LogWarning *log.Logger
+	LogError   *log.Logger
 )
 
+const logFilePath = "info.log"
+
 func init() {
-	logpath := "info.log"
-	flag.Parse()
-	file, err := os.OpenFile(logpath, os.O_RDWR | os.O_CREATE | os.O_APPEND, 0666)
-	defer file.Close()
-	if err != nil {
-		panic(err)
+	file := getLogFile()
+
+	LogInfo = log.New(file, "INFO:", log.LstdFlags|log.Lshortfile)
+	LogWarning = log.New(file, "WARNING:", log.LstdFlags|log.Lshortfile)
+	LogError = log.New(file, "ERROR:", log.LstdFlags|log.Lshortfile)
+	fmt.Println("Logfile: " + logFilePath)
+}
+
+// Возвращает существующий файл, в которой можно дописывать логи или создает новый файл
+func getLogFile() *os.File {
+	_, err := os.Stat(logFilePath)
+	if os.IsNotExist(err) {
+		file, err := os.Create(logFilePath)
+		if err != nil {
+			panic(err.Error())
+		}
+		return file
 	}
-	Log = log.New(file,  "", log.LstdFlags)
-	fmt.Println("Logfile: " + logpath)
+
+	file, err := os.OpenFile(logFilePath, os.O_RDWR|os.O_APPEND, 0660)
+	if err != nil {
+		panic(err.Error())
+	}
+	return file
 }

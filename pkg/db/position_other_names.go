@@ -34,5 +34,5 @@ func (d *Database) GetPositionWithoutOtherNames() (positions []models.Position) 
 func (d *Database) UpdatePositionOtherNames(pos models.Position) {
 	query := fmt.Sprintf(QueryUpdatePositionsOtherNames, convertArrayToSQLString(pos.OtherNames), pos.Id)
 	d.ExecuteQuery(query)
-	logger.Log.Printf("Вариации написания для профессии - %s:%s", pos.Name, convertArrayToSQLString(pos.OtherNames))
+	logger.LogInfo.Printf("Вариации написания для профессии - %s:%s", pos.Name, convertArrayToSQLString(pos.OtherNames))
 }

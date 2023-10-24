@@ -20,5 +20,5 @@ func (d *Database) GetPositionWithoutAbout() (positions []models.Position) {
 func (d *Database) UpdatePositionAbout(pos models.Position) {
 	query := fmt.Sprintf(QueryUpdatePositionAbout, strings.ReplaceAll(pos.About, "'", "`"), pos.Id)
 	d.ExecuteQuery(query)
-	logger.Log.Printf("Короткое описание для профессии - %s:%s", pos.Name, pos.About)
+	logger.LogInfo.Printf("Короткое описание для профессии - %s:%s", pos.Name, pos.About)
 }

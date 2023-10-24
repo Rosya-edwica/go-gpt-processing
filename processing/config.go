@@ -2,10 +2,19 @@ package processing
 
 import (
 	"fmt"
+	"go-gpt-processing/pkg/logger"
 	"go-gpt-processing/pkg/telegram"
+	"log"
 	"strings"
 	"time"
 )
+
+const processingPrefix = "processing: "
+
+// TODO: Заполнить структуру, перенести вопросы в конфиг и добавить методы к промту
+type Promt struct {
+	PositionAbout string
+}
 
 func checkErr(err error) {
 	var message string
@@ -23,6 +32,10 @@ func checkErr(err error) {
 		Pause(30)
 		fmt.Println(err.Error(), "Программа продолжит выполнение через 30 секунд")
 		return
+	case strings.Contains(err.Error(), "GPT не знает что ответить"):
+		Pause(30)
+		fmt.Println(err.Error(), "Программа продолжит выполнение через 30 секунд")
+		return
 
 	// Скорее всего проблема с интернетом или с доступом к openAI
 	case strings.Contains(err.Error(), "status: code: 503"):
@@ -36,8 +49,10 @@ func checkErr(err error) {
 	default:
 		message = fmt.Sprintf("Не удалось определить тип ошибки: %s\nПрограма остановлена.", err.Error())
 	}
+
+	logger.LogError.Println(processingPrefix + message)
 	telegram.ErrorMessageMailing(message)
-	panic(err)
+	log.Fatal(message)
 
 }
 

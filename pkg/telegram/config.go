@@ -39,7 +39,7 @@ func getJson(url string) (json string, err error) {
 func checkErr(err error) {
 	if err != nil {
 		Mailing(fmt.Sprintf("Программа остановилась: %s", err))
-		logger.Log.Fatal(err)
+		logger.LogError.Fatal(err)
 		panic(err)
 	}
 }

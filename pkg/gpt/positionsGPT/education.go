@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func GetEducationForPosition(name string) (education []string, timeEx int64, err error) {
+func GetEducationForPosition(name string) (education []string, err error) {
 	question := fmt.Sprintf(`
 		Каким образованием необходимо владеть специалисту "%s" России. Выбери из списка:
 		1. Без образования
@@ -19,15 +19,16 @@ func GetEducationForPosition(name string) (education []string, timeEx int64, err
 		"Среднее профессиональное образование" и "Высшее образование". Запиши ответы без ковычек, в одну строку, через знак запятая. 
 		Учитывай только специфику Российского образования.
 	`, name)
-	answer, timeEx, err := gpt.SendRequestToGPT(question)
-	if !strings.Contains("без образования", strings.ToLower(answer)) &&
-		!strings.Contains("среднее профессиональное образование", strings.ToLower(answer)) &&
-		!strings.Contains("высшее образование", strings.ToLower(answer)) {
-		return []string{}, timeEx, WrongAnswerError
+	resp := gpt.SendRequestToGPT(question)
+	if !strings.Contains("без образования", strings.ToLower(resp.Answer)) &&
+		!strings.Contains("среднее профессиональное образование", strings.ToLower(resp.Answer)) &&
+		!strings.Contains("высшее образование", strings.ToLower(resp.Answer)) {
+		return nil, gpt.WrongAnswerError
+
 	}
-	education = strings.Split(answer, ",")
+	education = strings.Split(resp.Answer, ",")
 	if err != nil {
-		return []string{}, timeEx, WrongAnswerError
+		return nil, gpt.WrongAnswerError
 	}
 	return
 }

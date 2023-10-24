@@ -2,24 +2,28 @@ package main
 
 import (
 	"go-gpt-processing/pkg/db"
+	"go-gpt-processing/pkg/logger"
 	"go-gpt-processing/processing"
+	"log"
 	"os"
 
 	"github.com/joho/godotenv"
 )
 
-var exitMessage = "Запусти программу с доп. аргументом: \n1. duplicate - чтобы запустить поиск дубликатов \n2. soft - чтобы запустить поиск soft-скиллов \n3. hard - чтобы запустить поиск hard-скиллов \n4. group - чтобы определить принадлежность к группам (навык, профессия, другое)"
+var exitMessage = "ОШИБКА!:\nЗапусти программу с доп. аргументом: \n1. duplicate - чтобы запустить поиск дубликатов \n2. soft - чтобы запустить поиск soft-скиллов \n3. hard - чтобы запустить поиск hard-скиллов \n4. group - чтобы определить принадлежность к группам (навык, профессия, другое)"
 
 func main() {
 	database := initDatabase()
+	database.Connect()
 	detectProcessingType(database)
 	database.Close()
+
 }
 
 func initDatabase() (database db.Database) {
 	err := godotenv.Load(".env")
 	if err != nil {
-		panic(err)
+		logger.LogError.Fatalf("Ошибка при подключении к БД: %s\n,", err.Error())
 	}
 
 	database = db.Database{
@@ -29,14 +33,14 @@ func initDatabase() (database db.Database) {
 		Name:     os.Getenv("MYSQL_NAME"),
 		Password: os.Getenv("MYSQL_PASSWORD"),
 	}
-	database.Connect()
 	return
 }
 
 func detectProcessingType(database db.Database) {
 	args := os.Args
 	if len(args) == 1 {
-		panic(exitMessage)
+		database.Close()
+		log.Fatal(exitMessage)
 	}
 	switch args[1] {
 	case "duplicate":
@@ -72,6 +76,7 @@ func detectProcessingType(database db.Database) {
 	case "position_skills":
 		processing.FindSkillsForPositions(&database)
 	default:
-		panic(exitMessage)
+		database.Close()
+		log.Fatal(exitMessage)
 	}
 }
