@@ -31,7 +31,6 @@ func GetExtraSkillsForPosition(positionName string, oldSkills []string) (result 
 	}
 	var newSkills []string
 	for _, i := range items {
-		fmt.Println(i, "Sadsadasfasfasf")
 		skill := rePointDigit.ReplaceAllString(i, "")
 		skill = strings.ReplaceAll(skill, ".", "")
 		// Если навык существовал в исходном списке, то сохраняем его отдельно. Тк нужно будет ему поставить is_chatgpt = true

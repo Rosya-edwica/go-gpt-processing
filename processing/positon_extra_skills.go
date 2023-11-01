@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"go-gpt-processing/pkg/db"
 	"go-gpt-processing/pkg/gpt/positionsGPT"
-	// "go-gpt-processing/pkg/telegram"
+	"go-gpt-processing/pkg/telegram"
 )
 
 func FindExtraSkillsForAllPositions(database *db.Database) {
@@ -12,13 +12,12 @@ func FindExtraSkillsForAllPositions(database *db.Database) {
 
 	positions := database.GetPositionsWithoutGPTSkills()
 	fmt.Println(len(positions), "count_pos")
-	for _, pos := range positions {
+	for i, pos := range positions {
 		skills, err := positionsGPT.GetExtraSkillsForPosition(pos.Name, pos.Skills)
 		checkErr(err)
-		fmt.Println(skills)
 		database.SaveExtraSkills(pos, skills)
-		Pause(5)
-		break
+		Pause(3)
+		fmt.Printf("Осталось: %d/%d\n ", i+1, len(positions))
 	}
-	// telegram.SuccessMessageMailing(SuccessMessage)
+	telegram.SuccessMessageMailing(SuccessMessage)
 }
