@@ -39,6 +39,7 @@ func checkErr(err error) {
 	case strings.Contains(err.Error(), "invalid character '<'"):
 		Pause(30)
 		fmt.Println(err.Error(), "Программа продолжит выполнение через 30 секунд")
+		return
 
 	// Скорее всего проблема с интернетом или с доступом к openAI
 	case strings.Contains(err.Error(), "status: code: 503"):
