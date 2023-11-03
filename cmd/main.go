@@ -77,6 +77,8 @@ func detectProcessingType(database db.Database) {
 		processing.FindSkillsForPositions(&database)
 	case "extra_skills":
 		processing.FindExtraSkillsForAllPositions(&database)
+	case "course_skills":
+		processing.FindSkillsForOpeneduCourses(&database)
 	default:
 		database.Close()
 		log.Fatal(exitMessage)

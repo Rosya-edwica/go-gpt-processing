@@ -41,3 +41,8 @@ type Question struct {
 type Test struct {
 	Questions []Question
 }
+
+type Course struct {
+	Id   int
+	Name string
+}
