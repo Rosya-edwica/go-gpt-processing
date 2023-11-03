@@ -12,7 +12,7 @@ const (
 		WHERE company.id = 2077 AND course.id NOT IN (
 			SELECT course_id FROM demand_to_course
 		)`
-	QueryInsertOpeneduSkills = `INSERT INTO demand_to_course(course_id, demand_id) VALUES(%d, %d)`
+	QueryInsertOpeneduSkills = `INSERT INTO demand_to_course(course_id, demand_id, is_chatgpt) VALUES(%d, %d, true)`
 	QuerySelectSkillByName   = `SELECT id FROM demand WHERE LOWER(name) = '%s' ORDER BY is_deleted ASC LIMIT 1`
 )
 
