@@ -10,13 +10,13 @@ import (
 const (
 	QuerySelectPositionsWithoutGPTSkills = `
 		SELECT pos.id, pos.name, 
-		GROUP_CONCAT(DISTINCT demand.name SEPARATOR '|') as 'skills'
+		GROUP_CONCAT(DISTINCT demand.name SEPARATOR '|') as skills
 		FROM position AS pos
 		LEFT JOIN position_to_demand AS pos_dem ON pos_dem.position_id = pos.id
 		LEFT JOIN demand ON demand.id = pos_dem.demand_id
 		WHERE pos_dem.is_chatgpt IS NOT TRUE
 		GROUP BY pos.id
-		ORDER BY pos.id
+		ORDER BY skills ASC
 	`
 )
 
