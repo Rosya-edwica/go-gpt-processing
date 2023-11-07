@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"go-gpt-processing/pkg/models"
+	"strings"
 )
 
 const (
@@ -63,7 +64,7 @@ func (d *Database) SaveCourseSkills(courseID int, skillsId []int) {
 }
 
 func (d *Database) GetSkillIdByName(name string) (id int) {
-	query := fmt.Sprintf(QuerySelectSkillByName, name)
+	query := fmt.Sprintf(QuerySelectSkillByName, strings.ReplaceAll(name, "'", ""))
 	rows, err := d.Connection.Query(query)
 	checkErr(err)
 	defer rows.Close()

@@ -42,8 +42,11 @@ func checkErr(err error) {
 		return
 
 	// Скорее всего проблема с интернетом или с доступом к openAI
-	case strings.Contains(err.Error(), "status: code: 503"):
+	case strings.Contains(err.Error(), "status: code: 50"):
 		message = "Не удается подключиться к openai. Проблема остановлена"
+		fmt.Println(err.Error(), "Программа продолжит выполнение через 30 секунд")
+		Pause(30)
+		return
 
 	// Произошло что-то с аккаунтом на openai или закончились деньги на токенах
 	case strings.Contains(err.Error(), "status code: 429"):
