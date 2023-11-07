@@ -6,18 +6,35 @@ import (
 )
 
 const (
+	QuerySelectAllCourses = `
+		SELECT id, name 
+		FROM course 
+		WHERE is_public = 1
+		AND id NOT IN (
+			SELECT course_id FROM demand_to_course WHERE is_chatgpt IS TRUE
+		)
+		`
+
 	QuerySelectOpeneduCourses = `
 		SELECT course.id, course.name  FROM course
 		LEFT JOIN company ON company.id = company_id
 		WHERE company.id = 2077 AND course.id NOT IN (
 			SELECT course_id FROM demand_to_course
 		)`
-	QueryInsertOpeneduSkills = `INSERT INTO demand_to_course(course_id, demand_id, is_chatgpt) VALUES(%d, %d, true)`
-	QuerySelectSkillByName   = `SELECT id FROM demand WHERE LOWER(name) = '%s' ORDER BY is_deleted ASC LIMIT 1`
+	QueryInsertSkills      = `INSERT INTO demand_to_course(course_id, demand_id, is_chatgpt) VALUES(%d, %d, true)`
+	QuerySelectSkillByName = `SELECT id FROM demand WHERE LOWER(name) = '%s' ORDER BY is_deleted ASC LIMIT 1`
 )
 
 func (d *Database) GetOpeneduCourses() (courses []models.Course) {
-	rows, err := d.Connection.Query(QuerySelectOpeneduCourses)
+	return d.GetCoursesByQuery(QuerySelectOpeneduCourses)
+}
+
+func (d *Database) GetAllCourses() (courses []models.Course) {
+	return d.GetCoursesByQuery(QuerySelectAllCourses)
+}
+
+func (d *Database) GetCoursesByQuery(query string) (courses []models.Course) {
+	rows, err := d.Connection.Query(query)
 	checkErr(err)
 	defer rows.Close()
 
@@ -33,9 +50,9 @@ func (d *Database) GetOpeneduCourses() (courses []models.Course) {
 	return
 }
 
-func (d *Database) SaveOpeneduSkills(courseID int, skillsId []int) {
+func (d *Database) SaveCourseSkills(courseID int, skillsId []int) {
 	for _, skillID := range skillsId {
-		query := fmt.Sprintf(QueryInsertOpeneduSkills, courseID, skillID)
+		query := fmt.Sprintf(QueryInsertSkills, courseID, skillID)
 		res, err := d.Connection.Exec(query)
 		checkErr(err)
 		id, err := res.LastInsertId()
