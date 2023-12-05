@@ -2,7 +2,7 @@ package db
 
 import (
 	"fmt"
-	"go-gpt-processing/pkg/models"
+	"go-gpt-processing/internal/models"
 	"strings"
 )
 

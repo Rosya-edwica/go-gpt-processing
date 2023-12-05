@@ -3,8 +3,8 @@ package db
 
 import (
 	"fmt"
+	"go-gpt-processing/internal/models"
 	"go-gpt-processing/pkg/logger"
-	"go-gpt-processing/pkg/models"
 	"strings"
 )
 

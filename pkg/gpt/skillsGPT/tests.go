@@ -2,8 +2,8 @@ package skillsGPT
 
 import (
 	"fmt"
+	"go-gpt-processing/internal/models"
 	"go-gpt-processing/pkg/gpt"
-	"go-gpt-processing/pkg/models"
 	"regexp"
 	"strings"
 )

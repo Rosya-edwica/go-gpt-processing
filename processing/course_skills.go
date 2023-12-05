@@ -4,9 +4,9 @@ package processing
 
 import (
 	"fmt"
+	"go-gpt-processing/internal/models"
 	"go-gpt-processing/pkg/db"
 	"go-gpt-processing/pkg/gpt/courseGPT"
-	"go-gpt-processing/pkg/models"
 	"go-gpt-processing/pkg/telegram"
 )
 

@@ -1,12 +1,21 @@
 package main
 
 import (
+	"flag"
 	"go-gpt-processing/pkg/db"
 	"go-gpt-processing/pkg/logger"
 	"go-gpt-processing/processing"
 	"log"
 	"os"
+	"strconv"
 
+	"go-gpt-processing/internal/dbs/mysql"
+	course "go-gpt-processing/internal/processing/course"
+	skill "go-gpt-processing/internal/processing/skill"
+	courseRep "go-gpt-processing/internal/repositories/course"
+	skillRep "go-gpt-processing/internal/repositories/skill"
+
+	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 )
 
@@ -18,6 +27,77 @@ func main() {
 	detectProcessingType(database)
 	database.Close()
 
+	// detect()
+
+}
+
+func detect() {
+	processingModel := flag.String("model", "", "a string")
+	processingMode := flag.String("mode", "", "a string")
+	flag.Parse()
+	if *processingModel == "" {
+		log.Fatal("Используйте флаг -model, чтобы выбрать модель данных (курс, навык, профессия)")
+	}
+	if *processingMode == "" {
+		log.Fatal("Используйте флаг -mode, чтобы выбрать действие")
+	}
+
+	switch *processingModel {
+	case "course":
+		setUpCourseProcessing(*processingMode)
+	case "skill":
+		setUpSkillProcessing(*processingMode)
+	case "position":
+		setUpPositionProcessing(*processingMode)
+	}
+}
+
+func setUpCourseProcessing(mode string) {
+	r := courseRep.NewRepository(InitDb())
+	var err error
+	switch mode {
+	case "skills_openedu":
+		err = course.FindSkillsForOpeneduCourses(r)
+	case "skills":
+		err = course.FindSkillsForAllCourses(r)
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+func setUpSkillProcessing(mode string) {
+	r := skillRep.NewRepository(InitDb())
+	var err error
+	switch mode {
+	case "duplicates":
+		err = skill.CheckAllSkillsForDuplicates(r)
+	}
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+func setUpPositionProcessing(mode string) {}
+
+func InitDb() *sqlx.DB {
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatal(err)
+	}
+	port, _ := strconv.Atoi(os.Getenv("MYSQL_PORT"))
+	if port == 0 {
+		log.Fatal("Не удалось прочитать порт ")
+	}
+	db, err := mysql.New(mysql.Config{
+		Addr:     os.Getenv("MYSQL_HOST"),
+		Port:     uint16(port),
+		User:     os.Getenv("MYSQL_USER"),
+		Password: os.Getenv("MYSQL_PASSWORD"),
+		DB:       os.Getenv("MYSQL_NAME"),
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	return db
 }
 
 func initDatabase() (database db.Database) {
@@ -81,6 +161,8 @@ func detectProcessingType(database db.Database) {
 		processing.FindSkillsForAllCourses(&database)
 	case "openedu_skills":
 		processing.FindSkillsForOpeneduCourses(&database)
+	case "disability":
+		processing.FindDisabilityForAllPositions(&database)
 	default:
 		database.Close()
 		log.Fatal(exitMessage)

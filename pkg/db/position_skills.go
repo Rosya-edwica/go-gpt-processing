@@ -4,7 +4,7 @@ package db
 import (
 	"errors"
 	"fmt"
-	"go-gpt-processing/pkg/models"
+	"go-gpt-processing/internal/models"
 	"strings"
 )
 

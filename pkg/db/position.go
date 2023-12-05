@@ -1,7 +1,7 @@
 package db
 
 import (
-	"go-gpt-processing/pkg/models"
+	"go-gpt-processing/internal/models"
 )
 
 func (d *Database) GetOnePositionByQuery(query string) (position models.Position) {
