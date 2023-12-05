@@ -19,11 +19,11 @@ func GetDisabilityForPosition(name string, disabilities []models.Disability) (di
 	 5. Нарушения речи 
 	 6. Нарушения поведения и общения, интеллектуальных процессов`, name)
 	response := gpt.SendRequestToGPT(question)
-	fmt.Println(response.Answer)
 	if response.Error != nil {
 		return nil, response.Error
 	}
-	if response.Answer == "нельзя" {
+	if strings.Contains(strings.ToLower(response.Answer), "нельзя") {
+		fmt.Printf("Нельзя для: '%s' -> %s \n", name, response.Answer)
 		return nil, nil
 	}
 

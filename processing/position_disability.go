@@ -16,7 +16,7 @@ func FindDisabilityForAllPositions(database *db.Database) {
 		posDisability, err := positionsGPT.GetDisabilityForPosition(pos.Name, disabilities)
 		checkErr(err)
 		pos.Disability = posDisability
-		fmt.Println(pos, posDisability)
+		fmt.Printf("Инвалидность для: '%s' -> %#v\n", pos.Name, posDisability)
 		database.UpdatePositionDisability(pos)
 		Pause(3)
 	}
