@@ -69,7 +69,7 @@ func SendRequestToGPT(query string) GptResponse {
 		Cost:           calculateCost(completion.Usage),
 	}
 	logger.LogInfo.Printf("gpt:\tВремя: %d сек.\tЦена: %f$\tТокены: %d\tТокены(вопрос): %d\tТокены(ответ): %d\tВопрос: %s\t...Ответ: %s\t...",
-		response.ExecutionTime, response.Cost, response.TotalTokens, response.QuestionTokens, response.AnswerTokens, response.Question[:100], response.Answer[:100])
+		response.ExecutionTime, response.Cost, response.TotalTokens, response.QuestionTokens, response.AnswerTokens, response.Question, response.Answer)
 	return response
 }
 
